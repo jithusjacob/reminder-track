@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+DerivedData/
+*.xccheckout
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# Build artifacts
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# CocoaPods / SPM
+Pods/
+.build/
+Package.resolved
+
+# Test results
+*.xcresult
+
+# Local env
+.env

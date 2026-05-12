@@ -1,0 +1,825 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		064FEF9ED4C7C2E8912E202D /* PermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B337A099D47FEC5D09A5DE0 /* PermissionView.swift */; };
+		089D876B972ED60D0D0396D6 /* CSVExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0A590D98C21CC09CB3712C /* CSVExporter.swift */; };
+		09231B8D94A24D92202C6B03 /* TrackerIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD8D1D5054C2B49B1BFB0B1 /* TrackerIntents.swift */; };
+		0E5CE9081BC17D90F320DEF9 /* TrackerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D71E76C63113E7E162DD336 /* TrackerActivityAttributes.swift */; };
+		284672B1A9D4CA971019FEE1 /* TrackerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F735E26FF41C432395AA005A /* TrackerWidget.swift */; };
+		2C7B71D6C473FB79D7EDB2E5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3750BC0AF2E3FB240509916E /* ContentView.swift */; };
+		2F22580D86AD3BB551260397 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B20CAD6196EF4FF1B1F7C22 /* DashboardView.swift */; };
+		338F44204C003DBA06F3F15F /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF25B9A9FF80994E511B9E2 /* TodayView.swift */; };
+		47B8A3266D091227D6425529 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB92C1F23A1A891996F27925 /* Foundation.framework */; };
+		601D926CB9A0CA5DCF409166 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEBAA6696959CE26F877B334 /* Models.swift */; };
+		7E1D34E2DE5FCA29B1A99349 /* EventKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7229C28C9C777BE326EC281 /* EventKitService.swift */; };
+		8C4939A624CC7B75C9ECAA52 /* LogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31059AD4ED8B8440013CC42 /* LogStore.swift */; };
+		A60C087D67D377EDC140BF72 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA7DC2BE9E4B4018B8A6F80D /* Models.swift */; };
+		B2B6FDD613CE9DD90A75C9D3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB92C1F23A1A891996F27925 /* Foundation.framework */; };
+		B302EACEEC0797499FF6D37B /* TrackerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03575F7D4A5DA55325A8AB8B /* TrackerActivityAttributes.swift */; };
+		BBF324DB27349DE948289C2F /* TrackerWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA14D2D8F98587B5A2744754 /* TrackerWatchApp.swift */; };
+		C436A172B1A7AAEA2AA0E15E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4136A808B9911EC0F0390F75 /* Foundation.framework */; };
+		D51B340A2E6138819CC98DA0 /* TrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74204F130E0A79D54C78CC3 /* TrackerApp.swift */; };
+		D693B82235F7A3DB10F5C94A /* TrackersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4562F32562DBE6CE663284F7 /* TrackersListView.swift */; };
+		E1F2A3B4C5D6E7F8A9B0C1D2 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C1B0A9F8E7D6C5B4A3F2E1 /* SummaryView.swift */; };
+		C3D4E5F6A7B8C9D0E1F2A3B4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4A3F2E1D0C9B8A7F6E5D4C3 /* Assets.xcassets */; };
+		DC4796484CA409DDF2D9F10B /* TrackerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = CAE5F838FA847BF62DE16407 /* TrackerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FB7EF09CF7D67055428A8D8B /* TrackerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E9391967DE8DD369D3E3B5 /* TrackerStore.swift */; };
+		FEA8876F4578C3A749CE6C8B /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49D23CFB6C3DC9163F902AD /* Models.swift */; };
+		6D7E8F9A0B1C2D3E4F5A6B7C /* ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C6D7E8F9A0B1C2D3E4F5A6B /* ModelsTests.swift */; };
+		8F9A0B1C2D3E4F5A6B7C8D9E /* CSVExporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8F9A0B1C2D3E4F5A6B7C8D /* CSVExporterTests.swift */; };
+		0B1C2D3E4F5A6B7C8D9E0F1A /* LogStoreCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0B1C2D3E4F5A6B7C8D9E0F /* LogStoreCacheTests.swift */; };
+		2D3E4F5A6B7C8D9E0F1A2B3C /* VolumeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2D3E4F5A6B7C8D9E0F1A2B /* VolumeTests.swift */; };
+		4F5A6B7C8D9E0F1A2B3C4D5E /* RegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4F5A6B7C8D9E0F1A2B3C4D /* RegressionTests.swift */; };
+		4D5E6F7A8B9C0D1E2F3A4B5C /* AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C4D5E6F7A8B9C0D1E2F3A4B /* AppUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		9948ACF5F5F8BE9CA1F272E7 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				DC4796484CA409DDF2D9F10B /* TrackerWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		03575F7D4A5DA55325A8AB8B /* TrackerActivityAttributes.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackerActivityAttributes.swift; sourceTree = "<group>"; };
+		0D71E76C63113E7E162DD336 /* TrackerActivityAttributes.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackerActivityAttributes.swift; sourceTree = "<group>"; };
+		1B337A099D47FEC5D09A5DE0 /* PermissionView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = PermissionView.swift; sourceTree = "<group>"; };
+		3750BC0AF2E3FB240509916E /* ContentView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = ContentView.swift; sourceTree = "<group>"; };
+		4136A808B9911EC0F0390F75 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		4562F32562DBE6CE663284F7 /* TrackersListView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackersListView.swift; sourceTree = "<group>"; };
+		D2C1B0A9F8E7D6C5B4A3F2E1 /* SummaryView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = SummaryView.swift; sourceTree = "<group>"; };
+		B4A3F2E1D0C9B8A7F6E5D4C3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5343EF4929F701647D17A707 /* TrackerApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackerApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B20CAD6196EF4FF1B1F7C22 /* DashboardView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = DashboardView.swift; sourceTree = "<group>"; };
+		9AF25B9A9FF80994E511B9E2 /* TodayView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TodayView.swift; sourceTree = "<group>"; };
+		AB0A590D98C21CC09CB3712C /* CSVExporter.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = CSVExporter.swift; sourceTree = "<group>"; };
+		BA14D2D8F98587B5A2744754 /* TrackerWatchApp.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackerWatchApp.swift; sourceTree = "<group>"; };
+		BFD8D1D5054C2B49B1BFB0B1 /* TrackerIntents.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackerIntents.swift; sourceTree = "<group>"; };
+		C6E9391967DE8DD369D3E3B5 /* TrackerStore.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackerStore.swift; sourceTree = "<group>"; };
+		C74204F130E0A79D54C78CC3 /* TrackerApp.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackerApp.swift; sourceTree = "<group>"; };
+		CAE5F838FA847BF62DE16407 /* TrackerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TrackerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB92C1F23A1A891996F27925 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		EA7DC2BE9E4B4018B8A6F80D /* Models.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = Models.swift; sourceTree = "<group>"; };
+		EEBAA6696959CE26F877B334 /* Models.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = Models.swift; sourceTree = "<group>"; };
+		F31059AD4ED8B8440013CC42 /* LogStore.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = LogStore.swift; sourceTree = "<group>"; };
+		F49D23CFB6C3DC9163F902AD /* Models.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = Models.swift; sourceTree = "<group>"; };
+		F7229C28C9C777BE326EC281 /* EventKitService.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = EventKitService.swift; sourceTree = "<group>"; };
+		F735E26FF41C432395AA005A /* TrackerWidget.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackerWidget.swift; sourceTree = "<group>"; };
+		FF42C41623155317D86547EB /* TrackerWatchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrackerWatchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C6D7E8F9A0B1C2D3E4F5A6B /* ModelsTests.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = ModelsTests.swift; sourceTree = "<group>"; };
+		7E8F9A0B1C2D3E4F5A6B7C8D /* CSVExporterTests.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = CSVExporterTests.swift; sourceTree = "<group>"; };
+		9A0B1C2D3E4F5A6B7C8D9E0F /* LogStoreCacheTests.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = LogStoreCacheTests.swift; sourceTree = "<group>"; };
+		1C2D3E4F5A6B7C8D9E0F1A2B /* VolumeTests.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = VolumeTests.swift; sourceTree = "<group>"; };
+		3E4F5A6B7C8D9E0F1A2B3C4D /* RegressionTests.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = RegressionTests.swift; sourceTree = "<group>"; };
+		3C4D5E6F7A8B9C0D1E2F3A4B /* AppUITests.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = AppUITests.swift; sourceTree = "<group>"; };
+		7A8B9C0D1E2F3A4B5C6D7E8F /* TrackerAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5A6B7C8D9E0F1A2B3C4D5E6F /* TrackerAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		49773B65B8E065810947BDFB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C436A172B1A7AAEA2AA0E15E /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4853736BA1A753380077330 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47B8A3266D091227D6425529 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DBA9A7DE3E242BE789115F3B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B2B6FDD613CE9DD90A75C9D3 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+		0D1E2F3A4B5C6D7E8F9A0B1C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D9E0F1A2B3C4D5E6F7A8B9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		26E33FDA56B5F61DC6D2B975 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5343EF4929F701647D17A707 /* TrackerApp.app */,
+				CAE5F838FA847BF62DE16407 /* TrackerWidgetExtension.appex */,
+				FF42C41623155317D86547EB /* TrackerWatchApp.app */,
+				7A8B9C0D1E2F3A4B5C6D7E8F /* TrackerAppTests.xctest */,
+				5A6B7C8D9E0F1A2B3C4D5E6F /* TrackerAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49A72A7697B0682CF2703559 /* Watch */ = {
+			isa = PBXGroup;
+			children = (
+				BA14D2D8F98587B5A2744754 /* TrackerWatchApp.swift */,
+				F49D23CFB6C3DC9163F902AD /* Models.swift */,
+			);
+			name = Watch;
+			path = .;
+			sourceTree = "<group>";
+		};
+		5952711856B4343787B1CDC5 /* Widget */ = {
+			isa = PBXGroup;
+			children = (
+				F735E26FF41C432395AA005A /* TrackerWidget.swift */,
+				0D71E76C63113E7E162DD336 /* TrackerActivityAttributes.swift */,
+				EA7DC2BE9E4B4018B8A6F80D /* Models.swift */,
+			);
+			name = Widget;
+			path = .;
+			sourceTree = "<group>";
+		};
+		60BA9877CC4D070C2CDBC531 = {
+			isa = PBXGroup;
+			children = (
+				26E33FDA56B5F61DC6D2B975 /* Products */,
+				9225AD833165BF5C2AC31B92 /* Frameworks */,
+				D4B6ADADE5EEED6010D7C6D3 /* Sources */,
+				5952711856B4343787B1CDC5 /* Widget */,
+				49A72A7697B0682CF2703559 /* Watch */,
+				4B5C6D7E8F9A0B1C2D3E4F5A /* TrackerAppTests */,
+				2B3C4D5E6F7A8B9C0D1E2F3A /* TrackerAppUITests */,
+			);
+			sourceTree = "<group>";
+		};
+		9225AD833165BF5C2AC31B92 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BE7F669C821E6537B3D7407F /* iOS */,
+				C87B8580A9ADB6B55783BC99 /* watchOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BE7F669C821E6537B3D7407F /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				DB92C1F23A1A891996F27925 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		C87B8580A9ADB6B55783BC99 /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				4136A808B9911EC0F0390F75 /* Foundation.framework */,
+			);
+			name = watchOS;
+			sourceTree = "<group>";
+		};
+		D4B6ADADE5EEED6010D7C6D3 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				B4A3F2E1D0C9B8A7F6E5D4C3 /* Assets.xcassets */,
+				C74204F130E0A79D54C78CC3 /* TrackerApp.swift */,
+				EEBAA6696959CE26F877B334 /* Models.swift */,
+				F7229C28C9C777BE326EC281 /* EventKitService.swift */,
+				C6E9391967DE8DD369D3E3B5 /* TrackerStore.swift */,
+				F31059AD4ED8B8440013CC42 /* LogStore.swift */,
+				3750BC0AF2E3FB240509916E /* ContentView.swift */,
+				1B337A099D47FEC5D09A5DE0 /* PermissionView.swift */,
+				9AF25B9A9FF80994E511B9E2 /* TodayView.swift */,
+				5B20CAD6196EF4FF1B1F7C22 /* DashboardView.swift */,
+				4562F32562DBE6CE663284F7 /* TrackersListView.swift */,
+				D2C1B0A9F8E7D6C5B4A3F2E1 /* SummaryView.swift */,
+				BFD8D1D5054C2B49B1BFB0B1 /* TrackerIntents.swift */,
+				AB0A590D98C21CC09CB3712C /* CSVExporter.swift */,
+				03575F7D4A5DA55325A8AB8B /* TrackerActivityAttributes.swift */,
+			);
+			name = Sources;
+			path = .;
+			sourceTree = "<group>";
+		};
+
+		4B5C6D7E8F9A0B1C2D3E4F5A /* TrackerAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				5C6D7E8F9A0B1C2D3E4F5A6B /* ModelsTests.swift */,
+				7E8F9A0B1C2D3E4F5A6B7C8D /* CSVExporterTests.swift */,
+				9A0B1C2D3E4F5A6B7C8D9E0F /* LogStoreCacheTests.swift */,
+				1C2D3E4F5A6B7C8D9E0F1A2B /* VolumeTests.swift */,
+				3E4F5A6B7C8D9E0F1A2B3C4D /* RegressionTests.swift */,
+			);
+			name = TrackerAppTests;
+			path = TrackerAppTests;
+			sourceTree = "<group>";
+		};
+		2B3C4D5E6F7A8B9C0D1E2F3A /* TrackerAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				3C4D5E6F7A8B9C0D1E2F3A4B /* AppUITests.swift */,
+			);
+			name = TrackerAppUITests;
+			path = TrackerAppUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		39349AC960D7EF498AB01DFE /* TrackerApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A2EDC35DFAC788E04BAD3931 /* Build configuration list for PBXNativeTarget "TrackerApp" */;
+			buildPhases = (
+				BC7F68AB124A2DD47E65B661 /* Sources */,
+				C4853736BA1A753380077330 /* Frameworks */,
+				F04D7240319378D41AD5920F /* Resources */,
+				9948ACF5F5F8BE9CA1F272E7 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TrackerApp;
+			productName = TrackerApp;
+			productReference = 5343EF4929F701647D17A707 /* TrackerApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C23F15B702EA8AD5ACDB0500 /* TrackerWatchApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 199A59E7F5BE74112C646BE3 /* Build configuration list for PBXNativeTarget "TrackerWatchApp" */;
+			buildPhases = (
+				D837908B4988317EBE004460 /* Sources */,
+				49773B65B8E065810947BDFB /* Frameworks */,
+				A5DBBD550E6E0C75505A0B92 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TrackerWatchApp;
+			productName = TrackerWatchApp;
+			productReference = FF42C41623155317D86547EB /* TrackerWatchApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E20CC5CD7E97C5257ECDDBAA /* TrackerWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 568BCE14BAECB60BED974EB0 /* Build configuration list for PBXNativeTarget "TrackerWidgetExtension" */;
+			buildPhases = (
+				7B4946532FC53829099C24D8 /* Sources */,
+				DBA9A7DE3E242BE789115F3B /* Frameworks */,
+				D7A8F24EC40E53B44053461B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TrackerWidgetExtension;
+			productName = TrackerWidgetExtension;
+			productReference = CAE5F838FA847BF62DE16407 /* TrackerWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+
+		8B9C0D1E2F3A4B5C6D7E8F9A /* TrackerAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1E2F3A4B5C6D7E8F9A0B1C2D /* Build configuration list for PBXNativeTarget "TrackerAppTests" */;
+			buildPhases = (
+				9C0D1E2F3A4B5C6D7E8F9A0B /* Sources */,
+				0D1E2F3A4B5C6D7E8F9A0B1C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TrackerAppTests;
+			productName = TrackerAppTests;
+			productReference = 7A8B9C0D1E2F3A4B5C6D7E8F /* TrackerAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		6B7C8D9E0F1A2B3C4D5E6F7A /* TrackerAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9E0F1A2B3C4D5E6F7A8B9C0D /* Build configuration list for PBXNativeTarget "TrackerAppUITests" */;
+			buildPhases = (
+				7C8D9E0F1A2B3C4D5E6F7A8B /* Sources */,
+				8D9E0F1A2B3C4D5E6F7A8B9C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TrackerAppUITests;
+			productName = TrackerAppUITests;
+			productReference = 5A6B7C8D9E0F1A2B3C4D5E6F /* TrackerAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8CD18E7D773435BFE4B256B8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 5A73D6D7E967EA79966DB641 /* Build configuration list for PBXProject "Tracker" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 60BA9877CC4D070C2CDBC531;
+			minimizedProjectReferenceProxies = 0;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 26E33FDA56B5F61DC6D2B975 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				39349AC960D7EF498AB01DFE /* TrackerApp */,
+				E20CC5CD7E97C5257ECDDBAA /* TrackerWidgetExtension */,
+				C23F15B702EA8AD5ACDB0500 /* TrackerWatchApp */,
+				8B9C0D1E2F3A4B5C6D7E8F9A /* TrackerAppTests */,
+				6B7C8D9E0F1A2B3C4D5E6F7A /* TrackerAppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A5DBBD550E6E0C75505A0B92 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D7A8F24EC40E53B44053461B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F04D7240319378D41AD5920F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3D4E5F6A7B8C9D0E1F2A3B4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7B4946532FC53829099C24D8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				284672B1A9D4CA971019FEE1 /* TrackerWidget.swift in Sources */,
+				0E5CE9081BC17D90F320DEF9 /* TrackerActivityAttributes.swift in Sources */,
+				A60C087D67D377EDC140BF72 /* Models.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BC7F68AB124A2DD47E65B661 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D51B340A2E6138819CC98DA0 /* TrackerApp.swift in Sources */,
+				601D926CB9A0CA5DCF409166 /* Models.swift in Sources */,
+				7E1D34E2DE5FCA29B1A99349 /* EventKitService.swift in Sources */,
+				FB7EF09CF7D67055428A8D8B /* TrackerStore.swift in Sources */,
+				8C4939A624CC7B75C9ECAA52 /* LogStore.swift in Sources */,
+				2C7B71D6C473FB79D7EDB2E5 /* ContentView.swift in Sources */,
+				064FEF9ED4C7C2E8912E202D /* PermissionView.swift in Sources */,
+				338F44204C003DBA06F3F15F /* TodayView.swift in Sources */,
+				2F22580D86AD3BB551260397 /* DashboardView.swift in Sources */,
+				D693B82235F7A3DB10F5C94A /* TrackersListView.swift in Sources */,
+				E1F2A3B4C5D6E7F8A9B0C1D2 /* SummaryView.swift in Sources */,
+				09231B8D94A24D92202C6B03 /* TrackerIntents.swift in Sources */,
+				089D876B972ED60D0D0396D6 /* CSVExporter.swift in Sources */,
+				B302EACEEC0797499FF6D37B /* TrackerActivityAttributes.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D837908B4988317EBE004460 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BBF324DB27349DE948289C2F /* TrackerWatchApp.swift in Sources */,
+				FEA8876F4578C3A749CE6C8B /* Models.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+
+		9C0D1E2F3A4B5C6D7E8F9A0B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6D7E8F9A0B1C2D3E4F5A6B7C /* ModelsTests.swift in Sources */,
+				8F9A0B1C2D3E4F5A6B7C8D9E /* CSVExporterTests.swift in Sources */,
+				0B1C2D3E4F5A6B7C8D9E0F1A /* LogStoreCacheTests.swift in Sources */,
+				2D3E4F5A6B7C8D9E0F1A2B3C /* VolumeTests.swift in Sources */,
+				4F5A6B7C8D9E0F1A2B3C4D5E /* RegressionTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7C8D9E0F1A2B3C4D5E6F7A8B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4D5E6F7A8B9C0D1E2F3A4B5C /* AppUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		013AA6D6682B33A40A791BB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "TrackerWatch-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app.watchkitapp;
+				PRODUCT_NAME = TrackerWatchApp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		061D405069E4D01F8CC52EFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "TrackerWidget-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app.widget;
+				PRODUCT_NAME = TrackerWidgetExtension;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		30CBA8148A01ABFDE30B17B4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5517DE4ED49A3187857C1D5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "TrackerApp-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app;
+				PRODUCT_NAME = "Reminder Track";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		58DB2B15D4908ADB1082651B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8496162650A49D96467964C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "TrackerWidget-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app.widget;
+				PRODUCT_NAME = TrackerWidgetExtension;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AC6953B304B4012A1FA40A43 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "TrackerWatch-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app.watchkitapp;
+				PRODUCT_NAME = TrackerWatchApp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		C04C726A9936F8BBDA25AF3C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = "TrackerApp-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app;
+				PRODUCT_NAME = "Reminder Track";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+
+		2F3A4B5C6D7E8F9A0B1C2D3E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app.tests;
+				PRODUCT_NAME = TrackerAppTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Reminder Track.app/Reminder Track";
+			};
+			name = Debug;
+		};
+		3A4B5C6D7E8F9A0B1C2D3E4F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app.tests;
+				PRODUCT_NAME = TrackerAppTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Reminder Track.app/Reminder Track";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0F1A2B3C4D5E6F7A8B9C0D1E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app.uitests;
+				PRODUCT_NAME = TrackerAppUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TEST_TARGET_NAME = TrackerApp;
+			};
+			name = Debug;
+		};
+		1A2B3C4D5E6F7A8B9C0D1E2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tracker.app.uitests;
+				PRODUCT_NAME = TrackerAppUITests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TEST_TARGET_NAME = TrackerApp;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		199A59E7F5BE74112C646BE3 /* Build configuration list for PBXNativeTarget "TrackerWatchApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				013AA6D6682B33A40A791BB8 /* Release */,
+				AC6953B304B4012A1FA40A43 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		568BCE14BAECB60BED974EB0 /* Build configuration list for PBXNativeTarget "TrackerWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8496162650A49D96467964C7 /* Release */,
+				061D405069E4D01F8CC52EFC /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5A73D6D7E967EA79966DB641 /* Build configuration list for PBXProject "Tracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				30CBA8148A01ABFDE30B17B4 /* Debug */,
+				58DB2B15D4908ADB1082651B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A2EDC35DFAC788E04BAD3931 /* Build configuration list for PBXNativeTarget "TrackerApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C04C726A9936F8BBDA25AF3C /* Release */,
+				5517DE4ED49A3187857C1D5E /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+
+		1E2F3A4B5C6D7E8F9A0B1C2D /* Build configuration list for PBXNativeTarget "TrackerAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F3A4B5C6D7E8F9A0B1C2D3E /* Debug */,
+				3A4B5C6D7E8F9A0B1C2D3E4F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9E0F1A2B3C4D5E6F7A8B9C0D /* Build configuration list for PBXNativeTarget "TrackerAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0F1A2B3C4D5E6F7A8B9C0D1E /* Debug */,
+				1A2B3C4D5E6F7A8B9C0D1E2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8CD18E7D773435BFE4B256B8 /* Project object */;
+}

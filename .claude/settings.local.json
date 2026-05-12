@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xcodegen --version)",
+      "Bash(ruby --version)",
+      "Bash(xcode-select -p)",
+      "Read(//Applications/**)",
+      "Bash(xcodeproj --version)",
+      "Bash(gem contents *)",
+      "Bash(ruby generate_project.rb)",
+      "Bash(ruby *)",
+      "Bash(open *)",
+      "Bash(xcrun simctl *)",
+      "Bash(python3 -c ' *)",
+      "Bash(xcodebuild -project Tracker.xcodeproj -scheme TrackerApp -destination id=671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2 -configuration Debug build)",
+      "Bash(rm -rf /Users/jsj/Library/Developer/CoreSimulator/Devices/671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2/data/Containers/Data/Application/7B1758D4-6CEC-4119-9DF0-843303A69E22/Library /Users/jsj/Library/Developer/CoreSimulator/Devices/671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2/data/Containers/Data/Application/7B1758D4-6CEC-4119-9DF0-843303A69E22/Documents /Users/jsj/Library/Developer/CoreSimulator/Devices/671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2/data/Containers/Data/Application/7B1758D4-6CEC-4119-9DF0-843303A69E22/tmp)",
+      "Bash(rm -rf /Users/jsj/Library/Developer/CoreSimulator/Devices/671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2/data/Containers/Shared/AppGroup/353EB9A2-0C37-4056-9313-9C6013AF2CD8/Library /Users/jsj/Library/Developer/CoreSimulator/Devices/671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2/data/Containers/Shared/AppGroup/353EB9A2-0C37-4056-9313-9C6013AF2CD8/Documents /Users/jsj/Library/Developer/CoreSimulator/Devices/671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2/data/Containers/Shared/AppGroup/353EB9A2-0C37-4056-9313-9C6013AF2CD8/tmp)",
+      "Bash(xcodebuild -project Tracker.xcodeproj -scheme TrackerApp -sdk iphonesimulator -destination id=671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2 -configuration Debug build)",
+      "Bash(grep -v \"^$\")",
+      "Bash(xcodebuild -project Tracker.xcodeproj -scheme Tracker -destination 'id=671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2' -configuration Debug build)",
+      "Bash(xcodebuild -project Tracker.xcodeproj -list)",
+      "Bash(xcodebuild -project Tracker.xcodeproj -scheme TrackerApp -destination 'id=671CAEF7-97F3-4758-A3C7-0AEBD0D6BAA2' -configuration Debug build)",
+      "Bash(cp /Users/jsj/Downloads/reminder-track-icons/ios/AppStore-1024.png    \"/Users/jsj/Documents/Reminder Track/Assets.xcassets/AppIcon.appiconset/AppStore-1024.png\")",
+      "Bash(cp /Users/jsj/Downloads/reminder-track-icons/ios/iPad-152.png           \"/Users/jsj/Documents/Reminder Track/Assets.xcassets/AppIcon.appiconset/iPad-152.png\")",
+      "Bash(cp /Users/jsj/Downloads/reminder-track-icons/ios/iPad-76.png            \"/Users/jsj/Documents/Reminder Track/Assets.xcassets/AppIcon.appiconset/iPad-76.png\")",
+      "Bash(cp /Users/jsj/Downloads/reminder-track-icons/ios/iPad-Pro-167.png       \"/Users/jsj/Documents/Reminder Track/Assets.xcassets/AppIcon.appiconset/iPad-Pro-167.png\")",
+      "Bash(cp /Users/jsj/Downloads/reminder-track-icons/ios/iPad-Spotlight-40.png  \"/Users/jsj/Documents/Reminder Track/Assets.xcassets/AppIcon.appiconset/iPad-Spotlight-40.png\")",
+      "Bash(gh auth *)"
+    ]
+  }
+}
