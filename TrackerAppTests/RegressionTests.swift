@@ -229,7 +229,7 @@ final class RegressionTests: XCTestCase {
     // record for it. A new device (or reinstall) synced the Reminders lists/reminders fine via
     // iCloud, but the app had nothing left to recognize them as trackers or rebuild their
     // settings — the Trackers tab would come up empty. Fix: durably encode full metadata into a
-    // "_tracker_config_" reminder's URL, written on create/update and self-healed on load, so a
+    // "config_track_metadata_user_can_ignore" reminder's URL, written on create/update and self-healed on load, so a
     // fresh install can fully reconstruct every tracker from EventKit alone.
     func testConfigURLRoundTripsAllTrackerMetadata() {
         var rt = DateComponents(); rt.hour = 7; rt.minute = 30

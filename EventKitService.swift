@@ -62,7 +62,7 @@ final class EventKitService {
 
         // Recovery path: any tracker calendar with no local cache entry — a
         // fresh install on a new device, a reinstall, or a cleared cache —
-        // gets rebuilt from its durable "_tracker_config_" reminder instead
+        // gets rebuilt from its durable "config_track_metadata_user_can_ignore" reminder instead
         // of silently disappearing, even though the underlying calendar and
         // reminders synced fine via iCloud.
         let knownIds    = Set(trackers.map(\.id))
@@ -140,16 +140,21 @@ final class EventKitService {
         try writeConfigReminder(for: tracker, in: cal, existing: existing)
     }
 
-    /// Writes (or updates) the hidden "_tracker_config_" marker reminder that
+    /// Writes (or updates) the hidden "config_track_metadata_user_can_ignore" marker reminder that
     /// durably encodes this tracker's full metadata in EventKit — the source
     /// of truth `fetchAllTrackers` recovers from when the local UserDefaults
     /// cache is empty (new device, reinstall, cache cleared).
+    ///
+    /// Marked completed so it stays out of the Reminders app's default list
+    /// view (completed items are hidden there unless "Show Completed" is
+    /// toggled) — it's pure metadata, never meant to be seen or acted on.
     private func writeConfigReminder(for tracker: Tracker, in cal: EKCalendar,
                                       existing: EKReminder? = nil) throws {
-        let r      = existing ?? EKReminder(eventStore: store)
-        r.calendar = cal
-        r.title    = "_tracker_config_"
-        r.url      = tracker.configURL
+        let r        = existing ?? EKReminder(eventStore: store)
+        r.calendar   = cal
+        r.title      = Self.configReminderTitle
+        r.url        = tracker.configURL
+        r.isCompleted = true
         try store.save(r, commit: true)
     }
 
@@ -318,8 +323,8 @@ final class EventKitService {
 
     /// Batch-fetches all scheduled reminders and updates UserDefaults + in-memory trackers
     /// to reflect any time edits (or deletions) the user made in Reminders.app. Also backfills
-    /// a durable "_tracker_config_" reminder for any tracker created before that existed, using
-    /// this same fetch so trackers self-heal onto the recoverable path at no extra round trip.
+    /// a durable "config_track_metadata_user_can_ignore" reminder for any tracker created before that existed, so
+    /// trackers self-heal onto the recoverable path.
     private func syncScheduledReminderTimes(for trackers: inout [Tracker]) async {
         let cals = trackers.compactMap { store.calendar(withIdentifier: $0.id) }
         guard !cals.isEmpty else { return }
@@ -328,18 +333,19 @@ final class EventKitService {
             withDueDateStarting: nil, ending: nil, calendars: cals)
         let reminders = await fetchReminders(pred)
 
-        // Build a map: calendarIdentifier → due DateComponents of the schedule reminder,
-        // and note which calendars already carry a durable config reminder.
+        // Build a map: calendarIdentifier → due DateComponents of the schedule reminder.
         var scheduleMap: [String: DateComponents] = [:]
-        var hasConfigReminder = Set<String>()
-        for r in reminders {
+        for r in reminders where r.url?.scheme == "tracker" && r.url?.host == "schedule" {
             guard let calId = r.calendar?.calendarIdentifier else { continue }
-            if r.url?.scheme == "tracker" && r.url?.host == "schedule" {
-                scheduleMap[calId] = r.dueDateComponents
-            } else if isConfigReminder(r) {
-                hasConfigReminder.insert(calId)
-            }
+            scheduleMap[calId] = r.dueDateComponents
         }
+
+        // Config reminders are marked completed (so they stay out of the Reminders
+        // app's default list), so detecting them needs an all-statuses fetch —
+        // predicateForIncompleteReminders above would never see them.
+        let allReminders = await fetchReminders(store.predicateForReminders(in: cals))
+        let hasConfigReminder = Set(
+            allReminders.filter(isConfigReminder).compactMap { $0.calendar?.calendarIdentifier })
 
         for i in trackers.indices {
             let id        = trackers[i].id
@@ -381,8 +387,12 @@ final class EventKitService {
 
     // MARK: Helpers
 
+    /// Title of the hidden metadata-carrier reminder — deliberately verbose/plain-English
+    /// so it reads as obviously ignorable if a user ever spots it via "Show Completed".
+    private static let configReminderTitle = "config_track_metadata_user_can_ignore"
+
     private func isConfigReminder(_ r: EKReminder) -> Bool {
-        r.title == "_tracker_config_" && r.url?.scheme == "tracker" && r.url?.host == "config"
+        r.title == Self.configReminderTitle && r.url?.scheme == "tracker" && r.url?.host == "config"
     }
 
     private func apply(_ entry: Entry, to r: EKReminder) {

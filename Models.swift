@@ -56,7 +56,7 @@ struct Tracker: Identifiable, Equatable, Hashable {
         return c.url
     }
 
-    // Parse from the hidden "_tracker_config_" reminder (new format).
+    // Parse from the hidden "config_track_metadata_user_can_ignore" reminder (new format).
     static func from(configReminder: EKReminder) -> Tracker? {
         guard
             let raw = configReminder.url?.absoluteString,
