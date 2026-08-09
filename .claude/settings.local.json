@@ -32,7 +32,9 @@
       "Bash(xcodebuild build *)",
       "Bash(xcodebuild clean *)",
       "Bash(xcodebuild test *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git pull *)"
     ]
   }
 }
