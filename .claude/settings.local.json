@@ -41,7 +41,10 @@
       "Bash(sed -i '' 's/group\\\\.com\\\\.tracker\\\\.app/group.com.jsj.reminder.track/g' TrackerApp.entitlements TrackerWatchApp.entitlements TrackerWidgetExtension.entitlements SharedTrackerDefaults.swift)",
       "Bash(echo \"exit: $?\")",
       "Bash(git checkout *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
