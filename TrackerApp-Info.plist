@@ -26,8 +26,6 @@
 	<false/>
 	<key>NSRemindersUsageDescription</key>
 	<string>Tracker uses Reminders to store your habits and sync them across your devices via iCloud.</string>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

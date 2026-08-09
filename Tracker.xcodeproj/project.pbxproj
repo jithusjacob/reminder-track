@@ -12,7 +12,6 @@
 		089D876B972ED60D0D0396D6 /* CSVExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0A590D98C21CC09CB3712C /* CSVExporter.swift */; };
 		09231B8D94A24D92202C6B03 /* TrackerIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD8D1D5054C2B49B1BFB0B1 /* TrackerIntents.swift */; };
 		0B1C2D3E4F5A6B7C8D9E0F1A /* LogStoreCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0B1C2D3E4F5A6B7C8D9E0F /* LogStoreCacheTests.swift */; };
-		0E5CE9081BC17D90F320DEF9 /* TrackerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D71E76C63113E7E162DD336 /* TrackerActivityAttributes.swift */; };
 		284672B1A9D4CA971019FEE1 /* TrackerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F735E26FF41C432395AA005A /* TrackerWidget.swift */; };
 		2C7B71D6C473FB79D7EDB2E5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3750BC0AF2E3FB240509916E /* ContentView.swift */; };
 		2D3E4F5A6B7C8D9E0F1A2B3C /* VolumeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2D3E4F5A6B7C8D9E0F1A2B /* VolumeTests.swift */; };
@@ -31,7 +30,6 @@
 		AA1122334455667788990033 /* SharedTrackerDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1122334455667788990011 /* SharedTrackerDefaults.swift */; };
 		AA1122334455667788990044 /* SharedTrackerDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1122334455667788990011 /* SharedTrackerDefaults.swift */; };
 		B2B6FDD613CE9DD90A75C9D3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB92C1F23A1A891996F27925 /* Foundation.framework */; };
-		B302EACEEC0797499FF6D37B /* TrackerActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03575F7D4A5DA55325A8AB8B /* TrackerActivityAttributes.swift */; };
 		BBF324DB27349DE948289C2F /* TrackerWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA14D2D8F98587B5A2744754 /* TrackerWatchApp.swift */; };
 		C3D4E5F6A7B8C9D0E1F2A3B4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4A3F2E1D0C9B8A7F6E5D4C3 /* Assets.xcassets */; };
 		C436A172B1A7AAEA2AA0E15E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4136A808B9911EC0F0390F75 /* Foundation.framework */; };
@@ -61,8 +59,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		03575F7D4A5DA55325A8AB8B /* TrackerActivityAttributes.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackerActivityAttributes.swift; sourceTree = "<group>"; };
-		0D71E76C63113E7E162DD336 /* TrackerActivityAttributes.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = TrackerActivityAttributes.swift; sourceTree = "<group>"; };
 		1B337A099D47FEC5D09A5DE0 /* PermissionView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = PermissionView.swift; sourceTree = "<group>"; };
 		D2AA7A40638B4B46968A004A /* IntroView.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = IntroView.swift; sourceTree = "<group>"; };
 		1C2D3E4F5A6B7C8D9E0F1A2B /* VolumeTests.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; includeInIndex = 1; path = VolumeTests.swift; sourceTree = "<group>"; };
@@ -191,7 +187,6 @@
 			isa = PBXGroup;
 			children = (
 				F735E26FF41C432395AA005A /* TrackerWidget.swift */,
-				0D71E76C63113E7E162DD336 /* TrackerActivityAttributes.swift */,
 				EA7DC2BE9E4B4018B8A6F80D /* Models.swift */,
 			);
 			name = Widget;
@@ -254,7 +249,6 @@
 				D2C1B0A9F8E7D6C5B4A3F2E1 /* SummaryView.swift */,
 				BFD8D1D5054C2B49B1BFB0B1 /* TrackerIntents.swift */,
 				AB0A590D98C21CC09CB3712C /* CSVExporter.swift */,
-				03575F7D4A5DA55325A8AB8B /* TrackerActivityAttributes.swift */,
 				BB1122334455667788990011 /* TrackerApp.entitlements */,
 				CC1122334455667788990011 /* TrackerWidgetExtension.entitlements */,
 				DD1122334455667788990011 /* TrackerWatchApp.entitlements */,
@@ -430,7 +424,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				284672B1A9D4CA971019FEE1 /* TrackerWidget.swift in Sources */,
-				0E5CE9081BC17D90F320DEF9 /* TrackerActivityAttributes.swift in Sources */,
 				A60C087D67D377EDC140BF72 /* Models.swift in Sources */,
 				AA1122334455667788990033 /* SharedTrackerDefaults.swift in Sources */,
 			);
@@ -474,7 +467,6 @@
 				E1F2A3B4C5D6E7F8A9B0C1D2 /* SummaryView.swift in Sources */,
 				09231B8D94A24D92202C6B03 /* TrackerIntents.swift in Sources */,
 				089D876B972ED60D0D0396D6 /* CSVExporter.swift in Sources */,
-				B302EACEEC0797499FF6D37B /* TrackerActivityAttributes.swift in Sources */,
 				AA1122334455667788990022 /* SharedTrackerDefaults.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

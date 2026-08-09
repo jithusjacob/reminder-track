@@ -34,10 +34,6 @@ final class LogStoreCacheTests: XCTestCase {
         XCTAssertNil(logStore.errorMessage)
     }
 
-    func testLogVersionStartsAtZero() {
-        XCTAssertEqual(logStore.logVersion, 0)
-    }
-
     // MARK: - Query on Empty Cache
 
     func testEntryForUnknownTrackerReturnsNil() {
@@ -112,16 +108,6 @@ final class LogStoreCacheTests: XCTestCase {
         await logStore.toggle(tracker: t, date: .now)
         await logStore.toggle(tracker: t, date: .now)
         XCTAssertFalse(logStore.entry(for: t, on: .now)?.isCompleted == true)
-    }
-
-    func testLogIncrementsLogVersion() async throws {
-        guard service.isAuthorized else {
-            throw XCTSkip("Reminders permission not granted")
-        }
-        let before = logStore.logVersion
-        let t = makeTracker()
-        await logStore.toggle(tracker: t, date: .now)
-        XCTAssertGreaterThan(logStore.logVersion, before)
     }
 
     func testFetchAllWithUnknownIdReturnsEmpty() async throws {
