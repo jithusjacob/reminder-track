@@ -19,7 +19,9 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Reminder Track uses Reminders to store your habits and sync them across your Apple devices via iCloud.</string>
 	<key>WKApplication</key>
 	<true/>
 	<key>WKWatchKitApp</key>

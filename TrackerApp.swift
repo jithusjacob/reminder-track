@@ -3,32 +3,39 @@ import SwiftUI
 @main
 struct TrackerApp: App {
 
+    @AppStorage("hasSeenIntro") private var hasSeenIntro = false
+
     @State private var service       = EventKitService()
     @State private var trackerStore: TrackerStore?
     @State private var logStore: LogStore?
+    @State private var permissionDenied = false
 
     var body: some Scene {
         WindowGroup {
             Group {
-                if let ts = trackerStore, let ls = logStore {
+                if !hasSeenIntro {
+                    IntroView { hasSeenIntro = true }
+                } else if permissionDenied {
+                    PermissionDeniedView()
+                } else if let ts = trackerStore, let ls = logStore {
                     ContentView()
                         .environment(service)
                         .environment(ts)
                         .environment(ls)
                 } else {
                     PermissionView {
-                        Task {
-                            guard await service.requestPermission() else { return }
-                            let ts = TrackerStore(service: service)
-                            let ls = LogStore(service: service)
-                            await ts.load()
-                            trackerStore = ts
-                            logStore     = ls
-                        }
+                        Task { await requestAndSetup() }
                     }
                 }
             }
-            // Re-sync when app comes back to foreground
+            .task {
+                // Skip the permission screen automatically if already granted.
+                if service.isAlreadyAuthorized {
+                    await requestAndSetup()
+                } else if service.isDenied {
+                    permissionDenied = true
+                }
+            }
             .onReceive(
                 NotificationCenter.default.publisher(
                     for: UIApplication.willEnterForegroundNotification)
@@ -39,6 +46,19 @@ struct TrackerApp: App {
                     await ls.fetchAll(trackerIds: ts.trackers.map(\.id))
                 }
             }
+        }
+    }
+
+    private func requestAndSetup() async {
+        let granted = await service.requestPermission()
+        if granted {
+            let ts = TrackerStore(service: service)
+            let ls = LogStore(service: service)
+            await ts.load()
+            trackerStore = ts
+            logStore     = ls
+        } else if service.isDenied {
+            permissionDenied = true
         }
     }
 }

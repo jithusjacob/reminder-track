@@ -4,6 +4,16 @@ import SwiftUI
 
 final class ModelsTests: XCTestCase {
 
+    // MARK: - Content Tab
+
+    func testInitialTabIsTodayWhenTrackersExist() {
+        XCTAssertEqual(ContentTab.initial(hasTrackers: true), .today)
+    }
+
+    func testInitialTabIsTrackersWhenNoneExist() {
+        XCTAssertEqual(ContentTab.initial(hasTrackers: false), .trackers)
+    }
+
     // MARK: - Color Hex Parsing
 
     func testColorFromValidLowercaseHex() {
@@ -146,47 +156,6 @@ final class ModelsTests: XCTestCase {
             let decoded = try JSONDecoder().decode(RecurrenceType.self, from: encoded)
             XCTAssertEqual(type, decoded)
         }
-    }
-
-    // MARK: - TrackerExportData
-
-    func testExportDataVersionIsTwo() {
-        XCTAssertEqual(TrackerExportData.from(trackers: []).version, 2)
-    }
-
-    func testExportDataRoundtrip() throws {
-        let t = Tracker(id: "c1", name: "Run", icon: "figure.run",
-                        color: .indigo, reminderTime: nil,
-                        recurrence: .daily, isActive: true, createdAt: .now)
-        let data    = TrackerExportData.from(trackers: [t])
-        let encoded = try JSONEncoder().encode(data)
-        let decoded = try JSONDecoder().decode(TrackerExportData.self, from: encoded)
-        XCTAssertEqual(decoded.version,              2)
-        XCTAssertEqual(decoded.trackers.count,       1)
-        XCTAssertEqual(decoded.trackers[0].name,     "Run")
-        XCTAssertEqual(decoded.trackers[0].recurrence, "daily")
-    }
-
-    func testExportDataToTrackersPreservesFields() {
-        let t = Tracker(id: "c2", name: "Meditate", icon: "brain",
-                        color: .blue, reminderTime: nil,
-                        recurrence: .weekly, isActive: true, createdAt: .now)
-        let restored = TrackerExportData.from(trackers: [t]).toTrackers()
-        XCTAssertEqual(restored.count,          1)
-        XCTAssertEqual(restored[0].name,        "Meditate")
-        XCTAssertEqual(restored[0].recurrence,  .weekly)
-        XCTAssertTrue(restored[0].isActive)
-        XCTAssertFalse(restored[0].id.isEmpty)
-    }
-
-    func testExportDataToTrackersAssignsUniqueIds() {
-        let trackers = (0..<10).map { i in
-            Tracker(id: "c\(i)", name: "T\(i)", icon: "star",
-                    color: .red, reminderTime: nil,
-                    recurrence: .daily, isActive: true, createdAt: .now)
-        }
-        let restored = TrackerExportData.from(trackers: trackers).toTrackers()
-        XCTAssertEqual(Set(restored.map(\.id)).count, 10)
     }
 
     // MARK: - ISO Date Formatter

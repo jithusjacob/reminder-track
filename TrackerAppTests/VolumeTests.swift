@@ -55,24 +55,6 @@ final class VolumeTests: XCTestCase {
         }
     }
 
-    // MARK: - TrackerExportData Performance
-
-    func testExportDataEncodeFor100Trackers() {
-        let trackers = (0..<100).map { makeTracker(id: "t\($0)", name: "Tracker \($0)") }
-        let data     = TrackerExportData.from(trackers: trackers)
-        measure {
-            _ = try? JSONEncoder().encode(data)
-        }
-    }
-
-    func testExportDataDecodeFor100Trackers() throws {
-        let trackers = (0..<100).map { makeTracker(id: "t\($0)", name: "Tracker \($0)") }
-        let encoded  = try JSONEncoder().encode(TrackerExportData.from(trackers: trackers))
-        measure {
-            _ = try? JSONDecoder().decode(TrackerExportData.self, from: encoded)
-        }
-    }
-
     // MARK: - In-Memory Filter Performance
 
     func testDateRangeFiltering10000Entries() {
@@ -94,17 +76,6 @@ final class VolumeTests: XCTestCase {
         let dates = makeEntries(count: 5_000).map(\.date)
         measure {
             for date in dates { _ = DateFormatter.isoDate.string(from: date) }
-        }
-    }
-
-    // MARK: - Tracker creation
-
-    func testCreate500TrackersFromExportData() {
-        let trackers = (0..<500).map { makeTracker(id: "t\($0)", name: "T\($0)") }
-        measure {
-            let export    = TrackerExportData.from(trackers: trackers)
-            let restored  = export.toTrackers()
-            _ = Set(restored.map(\.id))
         }
     }
 

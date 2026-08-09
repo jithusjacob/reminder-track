@@ -19,9 +19,11 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSRemindersUsageDescription</key>
 	<string>Tracker uses Reminders to store your habits and sync them across your devices via iCloud.</string>
 	<key>NSSupportsLiveActivities</key>

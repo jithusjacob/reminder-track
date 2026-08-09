@@ -25,7 +25,26 @@
       "Bash(cp /Users/jsj/Downloads/reminder-track-icons/ios/iPad-76.png            \"/Users/jsj/Documents/Reminder Track/Assets.xcassets/AppIcon.appiconset/iPad-76.png\")",
       "Bash(cp /Users/jsj/Downloads/reminder-track-icons/ios/iPad-Pro-167.png       \"/Users/jsj/Documents/Reminder Track/Assets.xcassets/AppIcon.appiconset/iPad-Pro-167.png\")",
       "Bash(cp /Users/jsj/Downloads/reminder-track-icons/ios/iPad-Spotlight-40.png  \"/Users/jsj/Documents/Reminder Track/Assets.xcassets/AppIcon.appiconset/iPad-Spotlight-40.png\")",
-      "Bash(gh auth *)"
+      "Bash(gh auth *)",
+      "Bash(security find-identity *)",
+      "Bash(python3 *)",
+      "Bash(xcodebuild -list -project Tracker.xcodeproj)",
+      "Bash(xcodebuild build *)",
+      "Bash(xcodebuild test *)",
+      "Bash(cd *)",
+      "Bash(idb list-targets *)",
+      "Bash(idb connect *)",
+      "Bash(idb ui *)",
+      "Bash(xcodebuild *)",
+      "Bash(/usr/bin/xcodebuild -list -project Tracker.xcodeproj)",
+      "Bash(sed -i '' 's/com\\\\.tracker\\\\.app/com.jsj.reminder.track/g' Tracker.xcodeproj/project.pbxproj)",
+      "Bash(sed -i '' 's/group\\\\.com\\\\.tracker\\\\.app/group.com.jsj.reminder.track/g' TrackerApp.entitlements TrackerWatchApp.entitlements TrackerWidgetExtension.entitlements SharedTrackerDefaults.swift)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

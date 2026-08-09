@@ -59,11 +59,21 @@ struct Tracker: Identifiable, Equatable, Hashable {
     // Parse from the hidden "_tracker_config_" reminder (new format).
     static func from(configReminder: EKReminder) -> Tracker? {
         guard
-            let raw   = configReminder.url?.absoluteString,
-            let url   = URL(string: raw),
+            let raw = configReminder.url?.absoluteString,
+            let url = URL(string: raw),
+            let cal = configReminder.calendar
+        else { return nil }
+        return decode(configURL: url, id: cal.calendarIdentifier, name: cal.title)
+    }
+
+    /// Pure decode of a `configURL` (see above) into a Tracker, given the id/name
+    /// that live on the EventKit calendar rather than in the URL itself. Split out
+    /// from `from(configReminder:)` so the encode ↔ decode round trip is testable
+    /// without needing a saved `EKReminder`/`EKCalendar` pair.
+    static func decode(configURL url: URL, id: String, name: String) -> Tracker? {
+        guard
             url.scheme == "tracker", url.host == "config",
-            let comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
-            let cal   = configReminder.calendar
+            let comps = URLComponents(url: url, resolvingAgainstBaseURL: false)
         else { return nil }
 
         func q(_ name: String) -> String? {
@@ -77,8 +87,8 @@ struct Tracker: Identifiable, Equatable, Hashable {
         }
 
         return Tracker(
-            id:           cal.calendarIdentifier,
-            name:         cal.title,
+            id:           id,
+            name:         name,
             icon:         q("icon") ?? "checkmark",
             color:        Color(hex: q("color") ?? "") ?? .indigo,
             reminderTime: rt,
@@ -212,42 +222,6 @@ struct DateRange {
         let start = cal.date(from: cal.dateComponents([.year], from: date))!
         let end   = cal.date(byAdding: DateComponents(year: 1, day: -1), to: start)!
         return DateRange(start: start, end: end)
-    }
-}
-
-// MARK: - TrackerExportData
-
-struct TrackerExportData: Codable {
-    let version: Int
-    let trackers: [TrackerConfig]
-
-    struct TrackerConfig: Codable {
-        let name: String
-        let icon: String
-        let colorHex: String
-        let recurrence: String
-    }
-
-    static func from(trackers: [Tracker]) -> TrackerExportData {
-        TrackerExportData(version: 2, trackers: trackers.map {
-            TrackerConfig(name: $0.name, icon: $0.icon,
-                          colorHex: $0.colorHex, recurrence: $0.recurrence.rawValue)
-        })
-    }
-
-    func toTrackers() -> [Tracker] {
-        trackers.map { c in
-            Tracker(
-                id:           UUID().uuidString,
-                name:         c.name,
-                icon:         c.icon,
-                color:        Color(hex: c.colorHex) ?? .indigo,
-                reminderTime: nil,
-                recurrence:   RecurrenceType(rawValue: c.recurrence) ?? .daily,
-                isActive:     true,
-                createdAt:    .now
-            )
-        }
     }
 }
 
