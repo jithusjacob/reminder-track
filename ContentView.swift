@@ -50,10 +50,6 @@ struct ContentView: View {
             selectedTab = .initial(hasTrackers: !trackerStore.trackers.isEmpty)
             let ids = trackerStore.trackers.map(\.id)
             await logStore.fetchAll(trackerIds: ids)
-            logStore.syncLiveActivity(trackers: trackerStore.trackers)
-        }
-        .onChange(of: logStore.logVersion) {
-            logStore.syncLiveActivity(trackers: trackerStore.trackers)
         }
         .alert("Something went wrong",
                isPresented: Binding(

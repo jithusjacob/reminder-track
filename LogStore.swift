@@ -1,6 +1,5 @@
 import Foundation
 import EventKit
-import ActivityKit
 
 // MARK: - LogStore
 
@@ -10,13 +9,10 @@ final class LogStore {
     // Cache: trackerId → [dateString: Entry]
     private(set) var entriesByTracker: [String: [String: Entry]] = [:]
     private(set) var isLoading = false
-    // Bumped after every save; lets views trigger live-activity sync via onChange.
-    private(set) var logVersion = 0
     var errorMessage: String?
 
     private let service: EventKitService
     private var debounceTask: Task<Void, Never>?
-    private var _liveActivity: Any?  // Activity<TrackerActivityAttributes> when available
     private var watchedTrackerIds: [String] = []
 
     init(service: EventKitService) {
@@ -96,49 +92,6 @@ final class LogStore {
         }
     }
 
-    // MARK: - Live Activity
-
-    func syncLiveActivity(trackers: [Tracker]) {
-        guard #available(iOS 16.2, *),
-              ActivityAuthorizationInfo().areActivitiesEnabled else { return }
-
-        let today   = Calendar.current.startOfDay(for: .now)
-        let active  = trackers.filter(\.isActive)
-        let done    = active.filter { t in
-            entry(for: t, on: today)?.isCompleted == true
-        }
-
-        let midnight = Calendar.current.startOfDay(
-            for: Calendar.current.date(byAdding: .day, value: 1, to: .now)!)
-        let state = TrackerActivityAttributes.ContentState(
-            completedCount: done.count,
-            totalCount:     active.count,
-            completedNames: done.map(\.name)
-        )
-        let content = ActivityContent(state: state, staleDate: midnight)
-
-        if let activity = _liveActivity as? Activity<TrackerActivityAttributes> {
-            Task { await activity.update(content) }
-        } else {
-            _liveActivity = try? Activity.request(
-                attributes: TrackerActivityAttributes(),
-                content:    content
-            )
-        }
-    }
-
-    func endLiveActivity() {
-        guard #available(iOS 16.2, *) else { return }
-        guard let activity = _liveActivity as? Activity<TrackerActivityAttributes> else { return }
-        Task {
-            await activity.end(
-                ActivityContent(state: activity.content.state, staleDate: nil),
-                dismissalPolicy: .immediate
-            )
-        }
-        _liveActivity = nil
-    }
-
     // MARK: - Private
 
     private func save(entry: Entry, tracker: Tracker) async {
@@ -154,7 +107,6 @@ final class LogStore {
                 entriesByTracker[tracker.id] = [:]
             }
             entriesByTracker[tracker.id]?[key(entry.date)] = updated
-            logVersion += 1
         } catch {
             errorMessage = error.localizedDescription
         }

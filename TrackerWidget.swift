@@ -1,7 +1,6 @@
 import WidgetKit
 import SwiftUI
 import EventKit
-import ActivityKit
 
 private typealias HabitEntry = Entry
 
@@ -289,110 +288,6 @@ struct TrackerLockScreenWidget: Widget {
     }
 }
 
-// MARK: - Live Activity (iOS 16.2+)
-
-@available(iOSApplicationExtension 16.2, *)
-struct TrackerLiveActivity: Widget {
-    var body: some WidgetConfiguration {
-        ActivityConfiguration(for: TrackerActivityAttributes.self) { context in
-            HStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .stroke(Color.white.opacity(0.3), lineWidth: 4)
-                    let pct = context.state.totalCount > 0
-                        ? Double(context.state.completedCount) / Double(context.state.totalCount)
-                        : 0.0
-                    Circle()
-                        .trim(from: 0, to: pct)
-                        .stroke(Color.white,
-                                style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                        .rotationEffect(.degrees(-90))
-                    VStack(spacing: 0) {
-                        Text("\(context.state.completedCount)")
-                            .font(.system(.headline, design: .rounded).weight(.bold))
-                            .foregroundStyle(.white)
-                        Text("of \(context.state.totalCount)")
-                            .font(.system(size: 9))
-                            .foregroundStyle(.white.opacity(0.8))
-                    }
-                }
-                .frame(width: 54, height: 54)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Today's Habits")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.9))
-                    if context.state.completedCount == context.state.totalCount
-                        && context.state.totalCount > 0 {
-                        Text("All done! 🎉")
-                            .font(.caption2).foregroundStyle(.white)
-                    } else if context.state.completedNames.isEmpty {
-                        Text("None logged yet")
-                            .font(.caption2).foregroundStyle(.white.opacity(0.7))
-                    } else {
-                        Text(context.state.completedNames.joined(separator: ", "))
-                            .font(.caption2).foregroundStyle(.white.opacity(0.8))
-                            .lineLimit(1)
-                    }
-                }
-                Spacer()
-            }
-            .padding(.horizontal, 16).padding(.vertical, 12)
-            .background(Color.indigo.gradient)
-            .activityBackgroundTint(Color.indigo)
-
-        } dynamicIsland: { context in
-            let pct = context.state.totalCount > 0
-                ? Double(context.state.completedCount) / Double(context.state.totalCount)
-                : 0.0
-
-            return DynamicIsland {
-                DynamicIslandExpandedRegion(.center) {
-                    HStack(spacing: 12) {
-                        ZStack {
-                            Circle()
-                                .stroke(Color.secondary.opacity(0.3), lineWidth: 3)
-                            Circle()
-                                .trim(from: 0, to: pct)
-                                .stroke(Color.indigo,
-                                        style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                                .rotationEffect(.degrees(-90))
-                            Text("\(context.state.completedCount)/\(context.state.totalCount)")
-                                .font(.system(size: 11, design: .rounded).weight(.bold))
-                        }
-                        .frame(width: 44, height: 44)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Today's Habits")
-                                .font(.caption.weight(.semibold))
-                            Text(context.state.completedNames.isEmpty
-                                 ? "None yet"
-                                 : context.state.completedNames.joined(separator: " · "))
-                                .font(.caption2).foregroundStyle(.secondary).lineLimit(1)
-                        }
-                    }
-                }
-            } compactLeading: {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.indigo).font(.caption)
-            } compactTrailing: {
-                Text("\(context.state.completedCount)/\(context.state.totalCount)")
-                    .font(.system(.caption2, design: .rounded).weight(.bold))
-                    .foregroundStyle(.indigo)
-            } minimal: {
-                ZStack {
-                    Circle()
-                        .trim(from: 0, to: pct)
-                        .stroke(Color.indigo, lineWidth: 2)
-                        .rotationEffect(.degrees(-90))
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(.indigo)
-                }
-            }
-        }
-    }
-}
-
 // MARK: - Widget Bundle
 
 @main
@@ -400,8 +295,5 @@ struct TrackerWidgetBundle: WidgetBundle {
     var body: some Widget {
         TrackerWidget()
         TrackerLockScreenWidget()
-        if #available(iOSApplicationExtension 16.2, *) {
-            TrackerLiveActivity()
-        }
     }
 }
