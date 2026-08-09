@@ -82,6 +82,7 @@ struct TrackerFormView: View {
     @State private var reminderTime = Calendar.current.date(
         bySettingHour: 8, minute: 0, second: 0, of: .now) ?? .now
     @State private var showIcons    = false
+    @State private var isSaving     = false
 
     private var isEditing: Bool {
         if case .edit = mode { return true }; return false
@@ -137,20 +138,40 @@ struct TrackerFormView: View {
                     }
                 }
             }
+            .disabled(isSaving)
             .navigationTitle(isEditing ? "Edit Tracker" : "New Tracker")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
+                    // Disabled while saving too — Cancel only dismisses the sheet, it
+                    // can't actually stop the detached save Task, so leaving it enabled
+                    // would let someone dismiss while the tracker still gets created
+                    // silently in the background, looking cancelled when it wasn't.
                     Button("Cancel") { dismiss() }
+                        .disabled(isSaving)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save", action: save)
-                        .fontWeight(.semibold)
-                        .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    if isSaving {
+                        ProgressView()
+                    } else {
+                        Button("Save", action: save)
+                            .fontWeight(.semibold)
+                            .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    }
                 }
             }
             .sheet(isPresented: $showIcons) {
                 IconPickerSheet(selected: $icon, color: color)
+            }
+            .overlay {
+                if isSaving {
+                    ZStack {
+                        Color(.systemBackground).opacity(0.6).ignoresSafeArea()
+                        ProgressView("Saving…")
+                            .padding(24)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                    }
+                }
             }
         }
         .onAppear(perform: populate)
@@ -171,6 +192,12 @@ struct TrackerFormView: View {
     }
 
     private func save() {
+        // Rapid repeat taps (e.g. a slow EventKit round trip) would otherwise
+        // each spawn their own Task and create a separate duplicate tracker,
+        // since save() returns immediately and never itself waits on the save.
+        guard !isSaving else { return }
+        isSaving = true
+
         let timeComps: DateComponents? = setReminder
             ? Calendar.current.dateComponents([.hour, .minute], from: reminderTime)
             : nil
