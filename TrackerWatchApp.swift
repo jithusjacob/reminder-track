@@ -29,7 +29,6 @@ final class WatchTrackerStore {
 
     func load() async {
         isLoading = true
-        // Request permission
         let granted: Bool
         if #available(watchOS 10.0, *) {
             granted = (try? await eventStore.requestFullAccessToReminders()) ?? false
@@ -38,29 +37,41 @@ final class WatchTrackerStore {
         }
         guard granted else { isLoading = false; return }
 
-        // One fetch covers both config reminders (tracker identity) and entry reminders.
-        let allCals = eventStore.calendars(for: .reminder)
-        guard !allCals.isEmpty else { isLoading = false; return }
-        let pred = eventStore.predicateForReminders(in: allCals)
+        // Read tracker IDs and metadata from the shared App Group UserDefaults.
+        let ids = SharedTrackerDefaults.storedIds
+        guard !ids.isEmpty else { isLoading = false; return }
 
-        let allReminders: [EKReminder] = await withCheckedContinuation { cont in
-            eventStore.fetchReminders(matching: pred) { cont.resume(returning: $0 ?? []) }
+        let cals = ids.compactMap { eventStore.calendar(withIdentifier: $0) }
+        guard !cals.isEmpty else { isLoading = false; return }
+
+        trackers = ids.compactMap { id -> Tracker? in
+            guard let meta = SharedTrackerDefaults.meta(for: id),
+                  meta.isActive,
+                  let cal = eventStore.calendar(withIdentifier: id)
+            else { return nil }
+            var rt: DateComponents?
+            if let h = meta.reminderHour, let m = meta.reminderMinute {
+                rt = DateComponents(hour: h, minute: m)
+            }
+            return Tracker(
+                id:           id,
+                name:         cal.title,
+                icon:         meta.icon,
+                color:        Color(hex: meta.colorHex) ?? .indigo,
+                reminderTime: rt,
+                recurrence:   RecurrenceType(rawValue: meta.recurrence) ?? .daily,
+                isActive:     meta.isActive,
+                createdAt:    Date(timeIntervalSince1970: meta.createdAt))
         }
 
-        var seen = Set<String>()
-        trackers = allReminders
-            .filter { $0.title == "_tracker_config_"
-                   && $0.url?.scheme == "tracker"
-                   && $0.url?.host  == "config" }
-            .compactMap { Tracker.from(configReminder: $0) }
-            .filter { seen.insert($0.id).inserted }
-            .filter(\.isActive)
-
-        // Load today's entries
+        // Load today's entries from tracker calendars only.
         let today = Calendar.current.startOfDay(for: .now)
         let end   = today.addingTimeInterval(86399)
-
-        for r in allReminders {
+        let pred  = eventStore.predicateForReminders(in: cals)
+        let reminders: [EKReminder] = await withCheckedContinuation { cont in
+            eventStore.fetchReminders(matching: pred) { cont.resume(returning: $0 ?? []) }
+        }
+        for r in reminders {
             if let entry = Entry.from(reminder: r),
                entry.date >= today, entry.date <= end {
                 todayEntries[entry.trackerId] = entry
@@ -174,6 +185,10 @@ struct WatchTrackerRow: View {
             .padding(.vertical, 4)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isDone
+            ? "Mark \(tracker.name) as not done"
+            : "Mark \(tracker.name) as done")
+        .accessibilityAddTraits(isDone ? [.isSelected] : [])
         .listRowBackground(
             isDone ? tracker.color.opacity(0.1) : Color.clear
         )

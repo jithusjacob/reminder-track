@@ -125,6 +125,10 @@ struct TrackerRowView: View {
                     .symbolEffect(.bounce, value: isDone)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(isDone
+                ? "Mark \(tracker.name) as not done"
+                : "Mark \(tracker.name) as done")
+            .accessibilityAddTraits(isDone ? [.isSelected] : [])
         }
         .padding(14)
         .background(Color(.secondarySystemGroupedBackground))

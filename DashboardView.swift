@@ -1,10 +1,35 @@
 import SwiftUI
 
+// MARK: - Tracker Selection
+
+/// Resolves which tracker should stay selected given the live tracker list.
+/// Falls back to the first available tracker whenever the current selection
+/// is missing (nil) or no longer exists in the list (e.g. it was just
+/// deleted) — a stale struct copy otherwise never re-syncs on its own since
+/// it's never `nil`.
+enum TrackerSelection {
+    static func resolve(current: Tracker?, in trackers: [Tracker]) -> Tracker? {
+        if let current, trackers.contains(where: { $0.id == current.id }) {
+            return current
+        }
+        return trackers.first
+    }
+}
+
 // MARK: - Calendar View
 
 struct CalendarView: View {
     @Environment(TrackerStore.self) var trackerStore
     @Environment(LogStore.self)     var logStore
+
+    // UIKit-bridged dynamic colors (Color(.systemGroupedBackground) etc., used
+    // throughout this page) don't reliably redraw on their own when the system
+    // appearance flips while the view is already on screen and nothing else is
+    // triggering a re-render — this page is unusually static once a tracker and
+    // month are picked, so the stale colors are visible here. Reading colorScheme
+    // and keying the content on it forces SwiftUI to rebuild the subtree (and
+    // thus re-resolve every dynamic color) the moment appearance changes.
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var selectedTracker: Tracker?
     @State private var month = Date.now
@@ -35,18 +60,21 @@ struct CalendarView: View {
                     .navigationTitle("Calendar")
                 }
             }
+            .id(colorScheme)
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
-                if selectedTracker == nil {
-                    selectedTracker = trackerStore.trackers.first
-                }
+                reselectTrackerIfNeeded()
             }
             .onChange(of: trackerStore.trackers) {
-                if selectedTracker == nil {
-                    selectedTracker = trackerStore.trackers.first
-                }
+                reselectTrackerIfNeeded()
             }
         }
+    }
+
+    // MARK: Selection
+
+    private func reselectTrackerIfNeeded() {
+        selectedTracker = TrackerSelection.resolve(current: selectedTracker, in: trackerStore.trackers)
     }
 
     // MARK: Tracker Menu
@@ -177,6 +205,20 @@ struct MonthGrid: View {
     }
 }
 
+// MARK: - Day Lock Policy
+
+/// Future dates are normally locked from logging in-app, but a reminder
+/// already marked complete in the Reminders app (synced in as a completed
+/// Entry) should still show and stay interactive here, matching what
+/// Reminders already shows — only *undone* future days stay locked.
+enum DayLockPolicy {
+    static func isLocked(day: Date, isDone: Bool,
+                          referenceDate: Date = .now, calendar: Calendar = .current) -> Bool {
+        let isFuture = day > calendar.startOfDay(for: referenceDate)
+        return isFuture && !isDone
+    }
+}
+
 // MARK: - Day Cell
 
 struct DayCell: View {
@@ -188,13 +230,11 @@ struct DayCell: View {
     private var entry: Entry?  { logStore.entry(for: tracker, on: day) }
     private var isDone: Bool   { entry?.isCompleted ?? false }
     private var isToday: Bool  { Calendar.current.isDateInToday(day) }
-    private var isFuture: Bool {
-        day > Calendar.current.startOfDay(for: .now)
-    }
+    private var isLocked: Bool { DayLockPolicy.isLocked(day: day, isDone: isDone) }
 
     var body: some View {
         Button {
-            guard !isFuture else { return }
+            guard !isLocked else { return }
             Task { await logStore.toggle(tracker: tracker, date: day) }
         } label: {
             VStack(spacing: 6) {
@@ -223,7 +263,16 @@ struct DayCell: View {
             .frame(maxWidth: .infinity, minHeight: 54)
         }
         .buttonStyle(.plain)
-        .opacity(isFuture ? 0.25 : 1)
+        .opacity(isLocked ? 0.25 : 1)
+        .accessibilityLabel({
+            let dateStr = day.formatted(.dateTime.month(.abbreviated).day())
+            if isLocked { return dateStr }
+            return isDone
+                ? "\(dateStr), completed. Tap to unmark."
+                : "\(dateStr), not done. Tap to mark complete."
+        }())
+        .accessibilityAddTraits(isDone ? [.isSelected] : [])
+        .accessibilityHint(isLocked ? "Future date, cannot log" : "")
     }
 }
 
@@ -246,7 +295,10 @@ struct CalendarStatsRow: View {
 
     private var yearCompleted: Int {
         let yearRange = DateRange.year(containing: month)
-        let cap = min(yearRange.end, Calendar.current.startOfDay(for: .now))
+        let endOfToday = Calendar.current.date(
+            byAdding: DateComponents(day: 1, second: -1),
+            to: Calendar.current.startOfDay(for: .now))!
+        let cap = min(yearRange.end, endOfToday)
         return logStore.entries(for: tracker, in: DateRange(start: yearRange.start, end: cap))
             .filter(\.isCompleted).count
     }

@@ -121,14 +121,7 @@ final class RegressionTests: XCTestCase {
         XCTAssertNil(RecurrenceType(rawValue: "DAILY"))
     }
 
-    // MARK: - REG-010: ExportData version is always 2
-    // Bug: Version was bumped accidentally when migrating old format, causing import failures.
-    func testExportDataVersionIsAlwaysTwo() {
-        let empty   = TrackerExportData.from(trackers: [])
-        let nonEmpty = TrackerExportData.from(trackers: [makeTracker()])
-        XCTAssertEqual(empty.version,    2)
-        XCTAssertEqual(nonEmpty.version, 2)
-    }
+    // REG-010 (ExportData version) removed along with the Import/Export Setup feature.
 
     // MARK: - REG-011: Week range never starts in the future
     // Bug: At week boundaries, the range start was computed as next week's Monday.
@@ -156,6 +149,119 @@ final class RegressionTests: XCTestCase {
         let range = DateRange.month(containing: feb)
         let end   = Calendar.current.component(.day, from: range.end)
         XCTAssertEqual(end, 28)
+    }
+
+    // MARK: - REG-014: Year stat excludes today's own entry
+    // Bug: Year cap was truncated to startOfDay(today), so an entry logged today with a
+    // non-midnight timestamp (e.g. completed at 9:43am) fell after the cap and was excluded
+    // from the year total, even though it fell inside the current year.
+    func testYearCapIncludesEntryLoggedLaterToday() {
+        let yearRange  = DateRange.year(containing: .now)
+        let startOfDay = Calendar.current.startOfDay(for: .now)
+        let endOfToday = Calendar.current.date(
+            byAdding: DateComponents(day: 1, second: -1), to: startOfDay)!
+        let cap = min(yearRange.end, endOfToday)
+
+        let entryLoggedThisAfternoon = Calendar.current.date(
+            byAdding: .hour, value: 9, to: startOfDay)!
+        XCTAssertTrue(entryLoggedThisAfternoon <= cap,
+                      "An entry logged later today must still fall within the year cap")
+    }
+
+    // MARK: - REG-015: Calendar keeps showing a deleted tracker
+    // Bug: CalendarView only reset its selected tracker when selection was nil, so deleting
+    // the currently selected tracker left a stale struct copy selected forever — the page kept
+    // showing the deleted tracker and, since it no longer appeared in the live list, the
+    // switcher menu (gated on the live list) offered no way back to a valid tracker.
+    func testSelectionFallsBackWhenSelectedTrackerIsDeleted() {
+        let remaining = makeTracker(id: "keep-me")
+        let deleted   = makeTracker(id: "deleted-tracker")
+
+        let resolved = TrackerSelection.resolve(current: deleted, in: [remaining])
+
+        XCTAssertEqual(resolved?.id, remaining.id,
+                        "Selection must fall back to a tracker that still exists")
+    }
+
+    func testSelectionIsPreservedWhenStillPresent() {
+        let a = makeTracker(id: "a")
+        let b = makeTracker(id: "b")
+
+        let resolved = TrackerSelection.resolve(current: b, in: [a, b])
+
+        XCTAssertEqual(resolved?.id, b.id,
+                        "Selection must not change while it's still a valid tracker")
+    }
+
+    func testSelectionIsNilWhenNoTrackersRemain() {
+        let resolved = TrackerSelection.resolve(current: makeTracker(id: "deleted-tracker"), in: [])
+        XCTAssertNil(resolved, "Selection must clear to nil once every tracker is deleted")
+    }
+
+    // MARK: - REG-016: Future date already completed in Reminders stays interactive
+    // Bug: DayCell locked every future date unconditionally, so a reminder already marked
+    // complete in the Reminders app (synced in as a completed Entry) still showed dimmed and
+    // blocked from tapping in Reminder Track instead of reflecting its real completed state.
+    func testFutureDateAlreadyDoneIsNotLocked() {
+        let future = Calendar.current.date(byAdding: .day, value: 5, to: .now)!
+        XCTAssertFalse(DayLockPolicy.isLocked(day: future, isDone: true),
+                        "A future date already completed via Reminders must stay unlocked")
+    }
+
+    func testFutureDateNotYetDoneStaysLocked() {
+        let future = Calendar.current.date(byAdding: .day, value: 5, to: .now)!
+        XCTAssertTrue(DayLockPolicy.isLocked(day: future, isDone: false),
+                      "A future date with no completion yet must stay locked")
+    }
+
+    func testPastAndTodayDatesAreNeverLocked() {
+        // MonthGrid always hands DayCell startOfDay-normalized dates (never a
+        // live timestamp), so that's what this test feeds the policy too.
+        let today = Calendar.current.startOfDay(for: .now)
+        let past  = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+        XCTAssertFalse(DayLockPolicy.isLocked(day: today, isDone: false))
+        XCTAssertFalse(DayLockPolicy.isLocked(day: past, isDone: false))
+    }
+
+    // MARK: - REG-017: Trackers were unrecoverable on a fresh install / new device
+    // Bug: tracker metadata (icon, color, recurrence, active flag, reminder time, created date)
+    // was cached only in local UserDefaults, and createTrackerCalendar wrote no durable EventKit
+    // record for it. A new device (or reinstall) synced the Reminders lists/reminders fine via
+    // iCloud, but the app had nothing left to recognize them as trackers or rebuild their
+    // settings — the Trackers tab would come up empty. Fix: durably encode full metadata into a
+    // "_tracker_config_" reminder's URL, written on create/update and self-healed on load, so a
+    // fresh install can fully reconstruct every tracker from EventKit alone.
+    func testConfigURLRoundTripsAllTrackerMetadata() {
+        var rt = DateComponents(); rt.hour = 7; rt.minute = 30
+        let original = Tracker(
+            id: "ignored-in-round-trip", name: "ignored-in-round-trip", icon: "flame",
+            color: .orange, reminderTime: rt, recurrence: .weekdays,
+            isActive: false, createdAt: Date(timeIntervalSince1970: 1_700_000_000))
+
+        let url = original.configURL!
+        let recovered = Tracker.decode(configURL: url, id: "new-device-id", name: "Morning Run")
+
+        XCTAssertEqual(recovered?.id,   "new-device-id", "id/name come from the live calendar, not the URL")
+        XCTAssertEqual(recovered?.name, "Morning Run")
+        XCTAssertEqual(recovered?.icon,         original.icon)
+        XCTAssertEqual(recovered?.colorHex,     original.colorHex)
+        XCTAssertEqual(recovered?.recurrence,   original.recurrence)
+        XCTAssertEqual(recovered?.isActive,     original.isActive)
+        XCTAssertEqual(recovered?.reminderTime?.hour,   original.reminderTime?.hour)
+        XCTAssertEqual(recovered?.reminderTime?.minute, original.reminderTime?.minute)
+        XCTAssertEqual(recovered?.createdAt,    original.createdAt)
+    }
+
+    func testConfigURLRoundTripsWithNoReminderTime() {
+        let original = makeTracker()
+        let recovered = Tracker.decode(configURL: original.configURL!, id: "id2", name: "N")
+        XCTAssertNil(recovered?.reminderTime, "No scheduled time must decode back to nil, not a garbage 0:00")
+    }
+
+    func testDecodeRejectsUnrelatedURL() {
+        XCTAssertNil(Tracker.decode(configURL: URL(string: "tracker://schedule?trackerId=x")!,
+                                     id: "id", name: "N"),
+                     "A schedule-reminder URL must not be mistaken for a config reminder")
     }
 
     // MARK: - Helpers

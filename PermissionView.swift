@@ -1,5 +1,50 @@
 import SwiftUI
 
+// MARK: - Permission Denied
+
+struct PermissionDeniedView: View {
+    var body: some View {
+        VStack(spacing: 32) {
+            Spacer()
+
+            Image(systemName: "checklist")
+                .font(.system(size: 72))
+                .foregroundStyle(.secondary)
+
+            VStack(spacing: 12) {
+                Text("Reminders Access Required")
+                    .font(.system(.title2, design: .rounded, weight: .bold))
+
+                Text("Reminder Track needs access to Apple Reminders to store your habits. Please enable it in Settings.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+
+            Spacer()
+
+            Button {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            } label: {
+                Label("Open Settings", systemImage: "gear")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(.indigo)
+                    .foregroundStyle(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 40)
+        }
+    }
+}
+
+// MARK: - Permission Request
+
 struct PermissionView: View {
     let onRequest: () -> Void
 

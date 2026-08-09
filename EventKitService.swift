@@ -17,6 +17,18 @@ final class EventKitService {
 
     // MARK: Permission
 
+    var isAlreadyAuthorized: Bool {
+        if #available(iOS 17.0, *) {
+            return EKEventStore.authorizationStatus(for: .reminder) == .fullAccess
+        }
+        return EKEventStore.authorizationStatus(for: .reminder) == .authorized
+    }
+
+    var isDenied: Bool {
+        let status = EKEventStore.authorizationStatus(for: .reminder)
+        return status == .denied || status == .restricted
+    }
+
     func requestPermission() async -> Bool {
         do {
             let granted: Bool
@@ -48,19 +60,26 @@ final class EventKitService {
         // Primary path: load from UserDefaults (no EventKit round-trip needed).
         var trackers = loadFromDefaults(calMap: calMap)
 
-        if trackers.isEmpty {
-            // Fallback / migration: read _tracker_config_ reminders written by prior versions.
-            guard !allCals.isEmpty else { return [] }
-            let pred      = store.predicateForReminders(in: allCals)
+        // Recovery path: any tracker calendar with no local cache entry — a
+        // fresh install on a new device, a reinstall, or a cleared cache —
+        // gets rebuilt from its durable "_tracker_config_" reminder instead
+        // of silently disappearing, even though the underlying calendar and
+        // reminders synced fine via iCloud.
+        let knownIds    = Set(trackers.map(\.id))
+        let uncachedCals = allCals.filter { !knownIds.contains($0.calendarIdentifier) }
+        if !uncachedCals.isEmpty {
+            let pred      = store.predicateForReminders(in: uncachedCals)
             let reminders = await fetchReminders(pred)
-            trackers = reminders
+            let recovered = reminders
                 .filter { isConfigReminder($0) }
                 .compactMap { Tracker.from(configReminder: $0) }
-            for t in trackers { saveToDefaults(t) }
+            for t in recovered { saveToDefaults(t) }
+            trackers += recovered
         }
 
         // Sync scheduled-reminder times from Reminders.app so edits made there
-        // (different time, or reminder deleted) are reflected in the app.
+        // (different time, or reminder deleted) are reflected in the app, and
+        // backfill a config reminder for any tracker that predates this fix.
         await syncScheduledReminderTimes(for: &trackers)
         return trackers.sorted { $0.createdAt < $1.createdAt }
     }
@@ -93,7 +112,7 @@ final class EventKitService {
         cal.source  = preferredSource()
         try store.saveCalendar(cal, commit: true)
 
-        // Store metadata in UserDefaults — no extra reminder created.
+        // Fast path for this device: cache metadata in UserDefaults.
         let realTracker = Tracker(
             id: cal.calendarIdentifier, name: tracker.name,
             icon: tracker.icon, color: tracker.color,
@@ -101,6 +120,11 @@ final class EventKitService {
             recurrence: tracker.recurrence,
             isActive: tracker.isActive, createdAt: tracker.createdAt)
         saveToDefaults(realTracker)
+
+        // Durable copy in EventKit (syncs via iCloud) so a fresh install on a
+        // new device — where this UserDefaults cache is empty — can rebuild
+        // the tracker instead of losing it. See fetchAllTrackers's recovery path.
+        try writeConfigReminder(for: realTracker, in: cal)
         return cal.calendarIdentifier
     }
 
@@ -110,6 +134,23 @@ final class EventKitService {
         cal.cgColor = UIColor(tracker.color).cgColor
         try store.saveCalendar(cal, commit: true)
         saveToDefaults(tracker)
+
+        let existing = await fetchReminders(store.predicateForReminders(in: [cal]))
+            .first(where: isConfigReminder)
+        try writeConfigReminder(for: tracker, in: cal, existing: existing)
+    }
+
+    /// Writes (or updates) the hidden "_tracker_config_" marker reminder that
+    /// durably encodes this tracker's full metadata in EventKit — the source
+    /// of truth `fetchAllTrackers` recovers from when the local UserDefaults
+    /// cache is empty (new device, reinstall, cache cleared).
+    private func writeConfigReminder(for tracker: Tracker, in cal: EKCalendar,
+                                      existing: EKReminder? = nil) throws {
+        let r      = existing ?? EKReminder(eventStore: store)
+        r.calendar = cal
+        r.title    = "_tracker_config_"
+        r.url      = tracker.configURL
+        try store.save(r, commit: true)
     }
 
     func deleteTrackerCalendar(_ tracker: Tracker) async throws {
@@ -234,29 +275,10 @@ final class EventKitService {
         }
     }
 
-    // MARK: UserDefaults persistence
-
-    private struct TrackerMeta: Codable {
-        var icon: String
-        var colorHex: String
-        var recurrence: String
-        var isActive: Bool
-        var createdAt: Double
-        var reminderHour: Int?
-        var reminderMinute: Int?
-    }
-
-    private let defaults = UserDefaults.standard
-    private let idsKey   = "trackerCalendarIds"
-    private func metaKey(_ id: String) -> String { "trackerMeta_\(id)" }
-
-    private var storedIds: [String] {
-        get { defaults.stringArray(forKey: idsKey) ?? [] }
-        set { defaults.set(newValue, forKey: idsKey) }
-    }
+    // MARK: UserDefaults persistence (via SharedTrackerDefaults — shared with widget & Watch)
 
     private func saveToDefaults(_ tracker: Tracker) {
-        let meta = TrackerMeta(
+        let meta = SharedTrackerDefaults.TrackerMeta(
             icon:           tracker.icon,
             colorHex:       tracker.colorHex,
             recurrence:     tracker.recurrence.rawValue,
@@ -264,24 +286,17 @@ final class EventKitService {
             createdAt:      tracker.createdAt.timeIntervalSince1970,
             reminderHour:   tracker.reminderTime?.hour,
             reminderMinute: tracker.reminderTime?.minute)
-        if let data = try? JSONEncoder().encode(meta) {
-            defaults.set(data, forKey: metaKey(tracker.id))
-        }
-        if !storedIds.contains(tracker.id) {
-            storedIds = storedIds + [tracker.id]
-        }
+        SharedTrackerDefaults.save(meta, id: tracker.id)
     }
 
     private func removeFromDefaults(_ id: String) {
-        defaults.removeObject(forKey: metaKey(id))
-        storedIds = storedIds.filter { $0 != id }
+        SharedTrackerDefaults.remove(id: id)
     }
 
     private func loadFromDefaults(calMap: [String: EKCalendar]) -> [Tracker] {
-        storedIds.compactMap { id in
+        SharedTrackerDefaults.storedIds.compactMap { id in
             guard let cal  = calMap[id],
-                  let data = defaults.data(forKey: metaKey(id)),
-                  let meta = try? JSONDecoder().decode(TrackerMeta.self, from: data)
+                  let meta = SharedTrackerDefaults.meta(for: id)
             else { return nil }
             var rt: DateComponents?
             if let h = meta.reminderHour, let m = meta.reminderMinute {
@@ -302,7 +317,9 @@ final class EventKitService {
     // MARK: Scheduled-reminder sync
 
     /// Batch-fetches all scheduled reminders and updates UserDefaults + in-memory trackers
-    /// to reflect any time edits (or deletions) the user made in Reminders.app.
+    /// to reflect any time edits (or deletions) the user made in Reminders.app. Also backfills
+    /// a durable "_tracker_config_" reminder for any tracker created before that existed, using
+    /// this same fetch so trackers self-heal onto the recoverable path at no extra round trip.
     private func syncScheduledReminderTimes(for trackers: inout [Tracker]) async {
         let cals = trackers.compactMap { store.calendar(withIdentifier: $0.id) }
         guard !cals.isEmpty else { return }
@@ -311,11 +328,17 @@ final class EventKitService {
             withDueDateStarting: nil, ending: nil, calendars: cals)
         let reminders = await fetchReminders(pred)
 
-        // Build a map: calendarIdentifier → due DateComponents of the schedule reminder.
+        // Build a map: calendarIdentifier → due DateComponents of the schedule reminder,
+        // and note which calendars already carry a durable config reminder.
         var scheduleMap: [String: DateComponents] = [:]
-        for r in reminders where r.url?.scheme == "tracker" && r.url?.host == "schedule" {
+        var hasConfigReminder = Set<String>()
+        for r in reminders {
             guard let calId = r.calendar?.calendarIdentifier else { continue }
-            scheduleMap[calId] = r.dueDateComponents
+            if r.url?.scheme == "tracker" && r.url?.host == "schedule" {
+                scheduleMap[calId] = r.dueDateComponents
+            } else if isConfigReminder(r) {
+                hasConfigReminder.insert(calId)
+            }
         }
 
         for i in trackers.indices {
@@ -326,13 +349,17 @@ final class EventKitService {
             let ekHour    = ekDue?.hour
             let ekMinute  = ekDue?.minute
 
-            guard ekHour != stored?.hour || ekMinute != stored?.minute else { continue }
-
-            trackers[i].reminderTime = ekDue.flatMap {
-                guard let h = $0.hour, let m = $0.minute else { return nil }
-                return DateComponents(hour: h, minute: m)
+            if ekHour != stored?.hour || ekMinute != stored?.minute {
+                trackers[i].reminderTime = ekDue.flatMap {
+                    guard let h = $0.hour, let m = $0.minute else { return nil }
+                    return DateComponents(hour: h, minute: m)
+                }
+                saveToDefaults(trackers[i])
             }
-            saveToDefaults(trackers[i])
+
+            if !hasConfigReminder.contains(id), let cal = store.calendar(withIdentifier: id) {
+                try? writeConfigReminder(for: trackers[i], in: cal)
+            }
         }
     }
 

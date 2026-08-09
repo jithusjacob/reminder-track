@@ -3,7 +3,6 @@ import SwiftUI
 import EventKit
 import ActivityKit
 
-// Avoid collision with TimelineProvider's `Entry` associated type inside provider methods.
 private typealias HabitEntry = Entry
 
 // MARK: - Widget Entry
@@ -47,7 +46,6 @@ struct TrackerWidgetProvider: TimelineProvider {
                      completion: @escaping (Timeline<TrackerWidgetEntry>) -> Void) {
         Task {
             let entry = await buildEntry()
-            // Refresh at midnight so the widget resets daily
             let midnight = Calendar.current.startOfDay(
                 for: Calendar.current.date(byAdding: .day, value: 1, to: .now)!)
             let timeline = Timeline(entries: [entry], policy: .after(midnight))
@@ -58,58 +56,102 @@ struct TrackerWidgetProvider: TimelineProvider {
     // MARK: Build
 
     private func buildEntry() async -> TrackerWidgetEntry {
-        let store = EKEventStore()
-        // Widget runs in a separate process — request access directly
-        let granted: Bool
+        // Widget extensions can't present the system permission alert, so only
+        // read from EventKit if the host app has already been granted access —
+        // never call requestAccess/requestFullAccessToReminders from here.
+        let authorized: Bool
         if #available(iOS 17.0, *) {
-            granted = (try? await store.requestFullAccessToReminders()) ?? false
+            authorized = EKEventStore.authorizationStatus(for: .reminder) == .fullAccess
         } else {
-            granted = (try? await store.requestAccess(to: .reminder)) ?? false
+            authorized = EKEventStore.authorizationStatus(for: .reminder) == .authorized
         }
-        guard granted else {
+        guard authorized else {
             return TrackerWidgetEntry(date: .now, trackers: [])
         }
+        let store = EKEventStore()
 
-        // One fetch covers both config reminders (tracker identity) and entry reminders.
-        let allCals = store.calendars(for: .reminder)
-        guard !allCals.isEmpty else {
+        // Read tracker IDs and metadata from the shared App Group UserDefaults.
+        let ids = SharedTrackerDefaults.storedIds
+        guard !ids.isEmpty else {
             return TrackerWidgetEntry(date: .now, trackers: [])
         }
-        let pred = store.predicateForReminders(in: allCals)
-        let allReminders: [EKReminder] = await withCheckedContinuation { cont in
-            store.fetchReminders(matching: pred) { cont.resume(returning: $0 ?? []) }
-        }
-
-        var seen = Set<String>()
-        let trackers = allReminders
-            .filter { $0.title == "_tracker_config_"
-                   && $0.url?.scheme == "tracker"
-                   && $0.url?.host  == "config" }
-            .compactMap { Tracker.from(configReminder: $0) }
-            .filter { seen.insert($0.id).inserted }
-            .filter(\.isActive)
-            .prefix(4)
 
         let today = Calendar.current.startOfDay(for: .now)
         let end   = today.addingTimeInterval(86399)
 
-        let summaries = trackers.map { tracker -> TrackerSummary in
-            let todayEntry = allReminders
-                .compactMap { HabitEntry.from(reminder: $0) }
-                .filter { $0.trackerId == tracker.id
-                       && $0.date >= today && $0.date <= end }
-                .first
+        // Fetch today's entries for all tracker calendars in one pass.
+        let cals = ids.compactMap { store.calendar(withIdentifier: $0) }
+        let allEntries: [HabitEntry]
+        if cals.isEmpty {
+            allEntries = []
+        } else {
+            let incompletePred = store.predicateForIncompleteReminders(
+                withDueDateStarting: today, ending: end, calendars: cals)
+            let completedPred  = store.predicateForCompletedReminders(
+                withCompletionDateStarting: today, ending: end, calendars: cals)
+            let incomplete: [EKReminder] = await withCheckedContinuation { cont in
+                store.fetchReminders(matching: incompletePred) { cont.resume(returning: $0 ?? []) }
+            }
+            let completed: [EKReminder] = await withCheckedContinuation { cont in
+                store.fetchReminders(matching: completedPred) { cont.resume(returning: $0 ?? []) }
+            }
+            allEntries = (incomplete + completed).compactMap { HabitEntry.from(reminder: $0) }
+        }
+
+        let summaries: [TrackerSummary] = ids.prefix(4).compactMap { id in
+            guard let meta = SharedTrackerDefaults.meta(for: id),
+                  meta.isActive,
+                  let cal = store.calendar(withIdentifier: id)
+            else { return nil }
+
+            let isDone = allEntries.contains {
+                $0.trackerId == id && $0.isCompleted &&
+                $0.date >= today && $0.date <= end
+            }
+
             return TrackerSummary(
-                id:          tracker.id,
-                name:        tracker.name,
-                icon:        tracker.icon,
-                color:       tracker.color,
-                isDoneToday: todayEntry?.isCompleted ?? false,
+                id:          id,
+                name:        cal.title,
+                icon:        meta.icon,
+                color:       Color(hex: meta.colorHex) ?? .indigo,
+                isDoneToday: isDone,
                 streak:      0
             )
         }
 
-        return TrackerWidgetEntry(date: .now, trackers: Array(summaries))
+        return TrackerWidgetEntry(date: .now, trackers: summaries)
+    }
+}
+
+// MARK: - Entry View (family-aware)
+
+struct TrackerWidgetEntryView: View {
+    let entry: TrackerWidgetEntry
+    @Environment(\.widgetFamily) var family
+
+    var body: some View {
+        switch family {
+        case .systemSmall:
+            if entry.trackers.first != nil {
+                SmallWidgetView(entry: entry)
+            } else {
+                placeholderText
+            }
+        default:
+            if entry.trackers.isEmpty {
+                placeholderText
+            } else {
+                MediumWidgetView(entry: entry)
+            }
+        }
+    }
+
+    private var placeholderText: some View {
+        Text("Add trackers in the app")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
+            .padding()
     }
 }
 
@@ -141,8 +183,6 @@ struct SmallWidgetView: View {
             }
             .padding()
             .background(ContainerRelativeShape().fill(.background))
-        } else {
-            Text("No trackers").font(.caption).foregroundStyle(.secondary)
         }
     }
 }
@@ -226,16 +266,10 @@ struct TrackerWidget: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: TrackerWidgetProvider()) { entry in
-            Group {
-                switch entry.trackers.count {
-                case 0: Text("Add trackers in the app")
-                        .font(.caption).foregroundStyle(.secondary)
-                default: MediumWidgetView(entry: entry)
-                }
-            }
-            .containerBackground(.background, for: .widget)
+            TrackerWidgetEntryView(entry: entry)
+                .containerBackground(.background, for: .widget)
         }
-        .configurationDisplayName("Tracker")
+        .configurationDisplayName("Reminder Track")
         .description("See and log your habits at a glance.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
@@ -249,7 +283,7 @@ struct TrackerLockScreenWidget: Widget {
             LockScreenWidgetView(entry: entry)
                 .containerBackground(.background, for: .widget)
         }
-        .configurationDisplayName("Tracker (Lock Screen)")
+        .configurationDisplayName("Reminder Track (Lock Screen)")
         .description("Quick glance at your top habit.")
         .supportedFamilies([.accessoryCircular])
     }
@@ -261,7 +295,6 @@ struct TrackerLockScreenWidget: Widget {
 struct TrackerLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: TrackerActivityAttributes.self) { context in
-            // Lock-screen / banner view
             HStack(spacing: 16) {
                 ZStack {
                     Circle()

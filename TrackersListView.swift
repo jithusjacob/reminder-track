@@ -1,22 +1,10 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
 // MARK: - Trackers List
 
 struct TrackersListView: View {
     @Environment(TrackerStore.self) var trackerStore
     @State private var showAdd      = false
-    @State private var showImporter = false
-    @State private var importError: String?
-
-    private var exportURL: URL {
-        let data = (try? JSONEncoder().encode(
-            TrackerExportData.from(trackers: trackerStore.trackers))) ?? Data()
-        let url  = FileManager.default.temporaryDirectory
-                       .appendingPathComponent("tracker_setup.json")
-        try? data.write(to: url)
-        return url
-    }
 
     var body: some View {
         NavigationStack {
@@ -60,40 +48,8 @@ struct TrackersListView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
                 }
-                ToolbarItem(placement: .secondaryAction) {
-                    ShareLink(item: exportURL,
-                              preview: SharePreview("Tracker Setup",
-                                                    image: Image(systemName: "square.and.arrow.up"))) {
-                        Label("Share Setup", systemImage: "square.and.arrow.up")
-                    }
-                }
-                ToolbarItem(placement: .secondaryAction) {
-                    Button { showImporter = true } label: {
-                        Label("Import Setup", systemImage: "square.and.arrow.down")
-                    }
-                }
             }
             .sheet(isPresented: $showAdd) { TrackerFormView(mode: .add) }
-            .fileImporter(
-                isPresented: $showImporter,
-                allowedContentTypes: [.json],
-                allowsMultipleSelection: false
-            ) { result in
-                guard let url = try? result.get().first else { return }
-                guard url.startAccessingSecurityScopedResource() else { return }
-                defer { url.stopAccessingSecurityScopedResource() }
-                guard let data       = try? Data(contentsOf: url),
-                      let exportData = try? JSONDecoder().decode(TrackerExportData.self, from: data)
-                else { importError = "Could not read the file."; return }
-                Task {
-                    for t in exportData.toTrackers() { await trackerStore.add(t) }
-                }
-            }
-            .alert("Import Failed", isPresented: .constant(importError != nil)) {
-                Button("OK") { importError = nil }
-            } message: {
-                Text(importError ?? "")
-            }
             .overlay {
                 if trackerStore.trackers.isEmpty {
                     ContentUnavailableView(
