@@ -167,21 +167,57 @@ final class EventKitService {
     // MARK: Entries
 
     @discardableResult
-    func saveEntry(_ entry: Entry) throws -> String {
-        if !entry.id.isEmpty,
-           let existing = store.calendarItem(withIdentifier: entry.id) as? EKReminder {
-            apply(entry, to: existing)
+    func saveEntry(_ entry: Entry) async throws -> String {
+        let (lookupId, isSchedDerived) = ScheduleDerivedID.split(entry.id)
+
+        if !lookupId.isEmpty, let existing = store.calendarItem(withIdentifier: lookupId) as? EKReminder {
+            if isSchedDerived {
+                // Only touch completion state — title/dueDate/recurrence belong to
+                // the notification schedule, not to a single day's logged entry,
+                // and must survive untouched for future occurrences.
+                existing.isCompleted    = entry.isCompleted
+                existing.completionDate = entry.isCompleted ? .now : nil
+            } else {
+                apply(entry, to: existing)
+            }
             try store.save(existing, commit: true)
-            return existing.calendarItemIdentifier
+            return isSchedDerived ? ScheduleDerivedID.make(from: existing.calendarItemIdentifier)
+                                   : existing.calendarItemIdentifier
         }
+
         guard let cal = store.calendar(withIdentifier: entry.trackerId) else {
             throw TrackerError.calendarNotFound
         }
+
+        // Completing a day that still has a pending schedule reminder due then
+        // should check off that same reminder — the one the user actually sees
+        // in Reminders.app — instead of creating a second, separate one titled
+        // with a raw date. (Bonus: it also silences that day's notification,
+        // since you've already done the thing it was going to remind you about.)
+        if entry.isCompleted, let scheduled = await findPendingScheduleReminder(in: cal, dueOn: entry.date) {
+            scheduled.isCompleted    = true
+            scheduled.completionDate = .now
+            try store.save(scheduled, commit: true)
+            return ScheduleDerivedID.make(from: scheduled.calendarItemIdentifier)
+        }
+
         let r      = EKReminder(eventStore: store)
         r.calendar = cal
         apply(entry, to: r)
         try store.save(r, commit: true)
         return r.calendarItemIdentifier
+    }
+
+    private func findPendingScheduleReminder(in cal: EKCalendar, dueOn date: Date) async -> EKReminder? {
+        let pred      = store.predicateForIncompleteReminders(
+            withDueDateStarting: nil, ending: nil, calendars: [cal])
+        let reminders = await fetchReminders(pred)
+        return reminders.first { r in
+            guard r.url?.scheme == "tracker", r.url?.host == "schedule",
+                  let due = r.dueDateComponents, let dueDate = Calendar.current.date(from: due)
+            else { return false }
+            return Calendar.current.isDate(dueDate, inSameDayAs: date)
+        }
     }
 
     func deleteEntry(_ entry: Entry) throws {
@@ -396,7 +432,9 @@ final class EventKitService {
     }
 
     private func apply(_ entry: Entry, to r: EKReminder) {
-        r.title             = DateFormatter.isoDate.string(from: entry.date)
+        // Named after the tracker (not a raw date string) so it reads as the
+        // same recognizable item in Reminders.app as the schedule reminder does.
+        r.title             = r.calendar?.title ?? DateFormatter.isoDate.string(from: entry.date)
         r.notes             = entry.note.isEmpty ? nil : entry.note
         r.isCompleted       = entry.isCompleted
         r.url               = entry.metadataURL

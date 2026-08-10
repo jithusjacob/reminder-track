@@ -118,6 +118,28 @@ struct Tracker: Identifiable, Equatable, Hashable {
     }
 }
 
+// MARK: - Schedule-Derived Entry IDs
+
+/// An Entry synthesized from a completed schedule reminder (see
+/// `Entry.from(reminder:)`'s "schedule" case) carries a "-sched"-suffixed id —
+/// the real EventKit calendarItemIdentifier underneath doesn't have that suffix.
+/// EventKitService.saveEntry uses this to find and update that same schedule
+/// reminder in place instead of creating a second, separate reminder.
+enum ScheduleDerivedID {
+    static let suffix = "-sched"
+
+    static func make(from calendarItemIdentifier: String) -> String {
+        calendarItemIdentifier + suffix
+    }
+
+    /// Splits an Entry.id back into its underlying EventKit id and whether it
+    /// was schedule-derived.
+    static func split(_ id: String) -> (id: String, isSchedDerived: Bool) {
+        guard id.hasSuffix(suffix) else { return (id, false) }
+        return (String(id.dropLast(suffix.count)), true)
+    }
+}
+
 // MARK: - Entry
 
 struct Entry: Identifiable, Equatable {
@@ -178,10 +200,10 @@ struct Entry: Identifiable, Equatable {
                 let tid            = comps.queryItems?.first(where: { $0.name == "trackerId" })?.value,
                 let completionDate = reminder.completionDate
             else { return nil }
-            // Suffix "-sched" lets deduplication in fetchFiltered prefer explicit entry
+            // The suffix lets deduplication in fetchFiltered prefer explicit entry
             // reminders over schedule-derived ones when both exist for the same day.
             return Entry(
-                id:             reminder.calendarItemIdentifier + "-sched",
+                id:             ScheduleDerivedID.make(from: reminder.calendarItemIdentifier),
                 trackerId:      tid,
                 date:           Calendar.current.startOfDay(for: completionDate),
                 value:          1,

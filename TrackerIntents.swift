@@ -35,7 +35,7 @@ struct LogHabitIntent: AppIntent {
             note:        "Logged via Siri",
             isCompleted: true
         )
-        try service.saveEntry(entry)
+        try await service.saveEntry(entry)
 
         return .result(value: "✅ \(tracker.name) logged for today!")
     }
