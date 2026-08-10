@@ -264,6 +264,34 @@ final class RegressionTests: XCTestCase {
                      "A schedule-reminder URL must not be mistaken for a config reminder")
     }
 
+    // MARK: - REG-018: Completing today's habit created a second reminder instead
+    //                  of checking off the one already in Reminders.app
+    // Bug: saveEntry always created a brand-new EKReminder titled with a raw ISO date
+    // string, even when a pending schedule reminder (titled with the tracker's name) was
+    // already due that same day — so completing a habit in-app left the original reminder
+    // untouched and added a confusing second, differently-named one instead of checking it
+    // off. Fix: reuse and complete the pending schedule reminder when one exists, tagging
+    // the returned id with ScheduleDerivedID so a later toggle-off finds the same reminder
+    // again instead of creating yet another one.
+    func testScheduleDerivedIDRoundTrips() {
+        let tagged = ScheduleDerivedID.make(from: "abc123")
+        let (id, isSchedDerived) = ScheduleDerivedID.split(tagged)
+        XCTAssertEqual(id, "abc123")
+        XCTAssertTrue(isSchedDerived)
+    }
+
+    func testScheduleDerivedIDSplitLeavesPlainIdsUntouched() {
+        let (id, isSchedDerived) = ScheduleDerivedID.split("plain-entry-id")
+        XCTAssertEqual(id, "plain-entry-id")
+        XCTAssertFalse(isSchedDerived, "An id with no schedule suffix must not be misread as schedule-derived")
+    }
+
+    func testScheduleDerivedIDSplitOnEmptyString() {
+        let (id, isSchedDerived) = ScheduleDerivedID.split("")
+        XCTAssertEqual(id, "")
+        XCTAssertFalse(isSchedDerived)
+    }
+
     // MARK: - Helpers
 
     private func makeTracker(id: String = "reg-t") -> Tracker {

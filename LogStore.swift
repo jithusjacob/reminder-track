@@ -96,7 +96,7 @@ final class LogStore {
 
     private func save(entry: Entry, tracker: Tracker) async {
         do {
-            let savedId = try service.saveEntry(entry)
+            let savedId = try await service.saveEntry(entry)
             let updated = Entry(
                 id: savedId, trackerId: entry.trackerId,
                 date: entry.date, value: entry.value,
