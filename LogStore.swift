@@ -1,6 +1,33 @@
 import Foundation
 import EventKit
 
+// MARK: - Entry Cache Merge
+
+/// Pure computation behind LogStore.replaceCache: given one tracker's current
+/// cache, the freshly fetched entries for it, and (optionally) the date range
+/// that fetch covered, returns what the cache should become — dropping any
+/// cached entry no longer present upstream (e.g. a reminder deleted in
+/// Reminders.app) instead of leaving it stranded the way a simple additive
+/// merge would. Kept separate from LogStore/EventKit so it's unit-testable.
+enum EntryCacheMerge {
+    static func replacing(_ cache: [String: Entry], in range: DateRange?,
+                           with entries: [Entry], keyedBy key: (Date) -> String) -> [String: Entry] {
+        var result = cache
+        if let range {
+            for (dateKey, cached) in cache
+            where cached.date >= range.start && cached.date <= range.end {
+                result.removeValue(forKey: dateKey)
+            }
+        } else {
+            result.removeAll()
+        }
+        for entry in entries {
+            result[key(entry.date)] = entry
+        }
+        return result
+    }
+}
+
 // MARK: - LogStore
 
 @MainActor
@@ -41,7 +68,7 @@ final class LogStore {
     func fetchEntries(trackerIds: [String], range: DateRange) async {
         isLoading = true
         let fetched = await service.fetchEntries(trackerIds: trackerIds, in: range)
-        mergeIntoCache(fetched)
+        replaceCache(for: trackerIds, in: range, with: fetched)
         isLoading = false
     }
 
@@ -49,7 +76,7 @@ final class LogStore {
         watchedTrackerIds = trackerIds
         isLoading = true
         let fetched = await service.fetchAllEntries(trackerIds: trackerIds)
-        mergeIntoCache(fetched)
+        replaceCache(for: trackerIds, with: fetched)
         isLoading = false
     }
 
@@ -112,12 +139,20 @@ final class LogStore {
         }
     }
 
-    private func mergeIntoCache(_ entries: [Entry]) {
-        for entry in entries {
-            if entriesByTracker[entry.trackerId] == nil {
-                entriesByTracker[entry.trackerId] = [:]
-            }
-            entriesByTracker[entry.trackerId]?[key(entry.date)] = entry
+    /// Replaces cached entries for the given trackers (optionally scoped to a date
+    /// range) with a freshly fetched snapshot, dropping anything no longer present
+    /// upstream — e.g. a reminder that was deleted in Reminders.app. A plain additive
+    /// merge alone only ever adds/updates keys, so a stale completed entry for a deleted
+    /// reminder would otherwise never clear from the UI. When `range` is nil, the
+    /// fetch is assumed to be a complete unbounded snapshot for those trackers (as
+    /// fetchAllEntries always is), so their whole cache is cleared before merging.
+    private func replaceCache(for trackerIds: [String], in range: DateRange? = nil,
+                               with entries: [Entry]) {
+        let byTracker = Dictionary(grouping: entries, by: \.trackerId)
+        for id in trackerIds {
+            entriesByTracker[id] = EntryCacheMerge.replacing(
+                entriesByTracker[id] ?? [:], in: range,
+                with: byTracker[id] ?? [], keyedBy: key)
         }
     }
 

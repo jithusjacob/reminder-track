@@ -292,6 +292,46 @@ final class RegressionTests: XCTestCase {
         XCTAssertFalse(isSchedDerived)
     }
 
+    // MARK: - REG-019: Deleting a completed reminder in Reminders.app left it
+    //                  showing as done in Reminder Track forever
+    // Bug: LogStore's cache merge only ever added/updated entries from a fresh fetch, never
+    // removed one that had disappeared upstream — so deleting a completed reminder directly
+    // in Reminders.app (which correctly drops it from the next EventKit fetch) left the stale
+    // cached Entry, and its "completed" checkmark, stuck in the UI indefinitely. Fix: replace
+    // the cache for what a fetch actually covers instead of only ever merging into it.
+    func testUnboundedReplaceDropsEntryMissingFromFetch() {
+        let cache = ["2026-05-10": makeEntry(dateString: "2026-05-10")]
+        let result = EntryCacheMerge.replacing(cache, in: nil, with: [],
+                                                keyedBy: { DateFormatter.isoDate.string(from: $0) })
+        XCTAssertTrue(result.isEmpty, "An entry absent from an unbounded fetch must be dropped, not left stale")
+    }
+
+    func testRangeScopedReplaceDropsEntryMissingFromFetchWithinRange() {
+        let cache = ["2026-05-10": makeEntry(dateString: "2026-05-10")]
+        let range = DateRange(start: DateFormatter.isoDate.date(from: "2026-05-01")!,
+                               end:   DateFormatter.isoDate.date(from: "2026-05-31")!)
+        let result = EntryCacheMerge.replacing(cache, in: range, with: [],
+                                                keyedBy: { DateFormatter.isoDate.string(from: $0) })
+        XCTAssertTrue(result.isEmpty, "An entry inside the re-fetched range but missing from it must be dropped")
+    }
+
+    func testRangeScopedReplacePreservesEntryOutsideRange() {
+        let cache = ["2026-04-15": makeEntry(dateString: "2026-04-15")]
+        let range = DateRange(start: DateFormatter.isoDate.date(from: "2026-05-01")!,
+                               end:   DateFormatter.isoDate.date(from: "2026-05-31")!)
+        let result = EntryCacheMerge.replacing(cache, in: range, with: [],
+                                                keyedBy: { DateFormatter.isoDate.string(from: $0) })
+        XCTAssertNotNil(result["2026-04-15"],
+                        "An entry outside the re-fetched range must survive untouched")
+    }
+
+    func testReplaceMergesInFreshEntries() {
+        let fresh = makeEntry(dateString: "2026-05-10")
+        let result = EntryCacheMerge.replacing([:], in: nil, with: [fresh],
+                                                keyedBy: { DateFormatter.isoDate.string(from: $0) })
+        XCTAssertEqual(result["2026-05-10"]?.id, fresh.id)
+    }
+
     // MARK: - Helpers
 
     private func makeTracker(id: String = "reg-t") -> Tracker {
