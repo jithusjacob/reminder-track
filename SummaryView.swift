@@ -1,37 +1,19 @@
 import SwiftUI
 
-// MARK: - Summary Range Filter
-
-enum SummaryRangeFilter: String, CaseIterable, Identifiable {
-    case week    = "Week"
-    case month   = "Month"
-    case year    = "Year"
-    case allTime = "All Time"
-
-    var id: String { rawValue }
-
-    /// "All Time" is just the range from the tracker's own creation date through
-    /// today — expressing it as a DateRange (rather than a special nil case) lets
-    /// every stat below use the same completed/elapsed-days math for all four cases.
-    func range(trackerCreatedAt: Date, referenceDate: Date = .now) -> DateRange {
-        switch self {
-        case .week:  return .week(containing: referenceDate)
-        case .month: return .month(containing: referenceDate)
-        case .year:  return .year(containing: referenceDate)
-        case .allTime:
-            return DateRange(start: Calendar.current.startOfDay(for: trackerCreatedAt),
-                              end:   referenceDate)
-        }
-    }
-}
-
 // MARK: - Summary View
 
 struct SummaryView: View {
     @Environment(TrackerStore.self) var trackerStore
     @Environment(LogStore.self)     var logStore
 
-    @State private var filter: SummaryRangeFilter = .month
+    // Defaults to "this month, to date" — bounded by the date pickers below so
+    // it always stays valid (From ≤ To ≤ today).
+    @State private var rangeStart = DateRange.month(containing: .now).start
+    @State private var rangeEnd   = Date.now
+
+    private var selectedRange: DateRange {
+        DateRange(start: rangeStart, end: rangeEnd)
+    }
 
     var body: some View {
         NavigationStack {
@@ -44,19 +26,12 @@ struct SummaryView: View {
                     )
                 } else {
                     VStack(spacing: 0) {
-                        Picker("Range", selection: $filter) {
-                            ForEach(SummaryRangeFilter.allCases) { f in
-                                Text(f.rawValue).tag(f)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .padding(.horizontal)
-                        .padding(.top, 8)
+                        dateRangeBar
 
                         ScrollView {
                             VStack(spacing: 12) {
                                 ForEach(trackerStore.trackers) { tracker in
-                                    TrackerSummaryCard(tracker: tracker, filter: filter)
+                                    TrackerSummaryCard(tracker: tracker, range: selectedRange)
                                 }
                             }
                             .padding()
@@ -69,17 +44,30 @@ struct SummaryView: View {
             .navigationBarTitleDisplayMode(.large)
         }
     }
+
+    // MARK: Date Range Pickers
+
+    private var dateRangeBar: some View {
+        HStack(spacing: 12) {
+            DatePicker("From", selection: $rangeStart, in: ...rangeEnd, displayedComponents: .date)
+                .labelsHidden()
+            Text("–").foregroundStyle(.secondary)
+            DatePicker("To", selection: $rangeEnd, in: rangeStart...Date.now, displayedComponents: .date)
+                .labelsHidden()
+            Spacer()
+        }
+        .padding(.horizontal)
+        .padding(.top, 8)
+    }
 }
 
 // MARK: - Tracker Summary Card
 
 private struct TrackerSummaryCard: View {
     let tracker: Tracker
-    let filter: SummaryRangeFilter
+    let range: DateRange
 
     @Environment(LogStore.self) var logStore
-
-    private var range: DateRange { filter.range(trackerCreatedAt: tracker.createdAt) }
 
     private var rangeCompleted: Int {
         logStore.entries(for: tracker, in: range).filter(\.isCompleted).count
@@ -90,9 +78,7 @@ private struct TrackerSummaryCard: View {
         return max(1, days + 1)
     }
 
-    /// Days elapsed so far within the range, capped at today — every preset range
-    /// (including "All Time") runs through the present, so this is never the full
-    /// range width until the range's last day has actually passed.
+    /// Days elapsed so far within the range, capped at today.
     private var rangeElapsedDays: Int {
         let today     = Calendar.current.startOfDay(for: .now)
         let cappedEnd = min(today, Calendar.current.startOfDay(for: range.end))
@@ -108,10 +94,12 @@ private struct TrackerSummaryCard: View {
         logStore.allEntries(for: tracker).filter(\.isCompleted).count
     }
 
+    private var rangeLabel: String {
+        "\(range.start.formatted(.dateTime.month(.abbreviated).day())) – \(range.end.formatted(.dateTime.month(.abbreviated).day()))"
+    }
+
     private var progressLabel: String {
-        filter == .allTime
-            ? "\(rangeCompleted) of \(rangeElapsedDays) days since you started"
-            : "\(rangeCompleted) of \(rangeElapsedDays) days this \(filter.rawValue.lowercased())"
+        "\(rangeCompleted) of \(rangeTotalDays) days in \(rangeLabel)"
     }
 
     var body: some View {
@@ -143,22 +131,14 @@ private struct TrackerSummaryCard: View {
                     .foregroundStyle(.secondary)
             }
 
-            // Stats row — a second "All Time" cell would just duplicate the first
-            // when the filter itself is All Time, so collapse to one cell there.
-            if filter == .allTime {
-                statCell("\(rangeCompleted)", "All Time")
-                    .frame(maxWidth: .infinity)
-                    .background(Color(.tertiarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-            } else {
-                HStack(spacing: 0) {
-                    statCell("\(rangeCompleted)/\(rangeTotalDays)", filter.rawValue)
-                    Divider().frame(height: 36)
-                    statCell("\(allTimeCompleted)", "All Time")
-                }
-                .background(Color(.tertiarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
+            // Stats row: selected range alongside a fixed All Time reference.
+            HStack(spacing: 0) {
+                statCell("\(rangeCompleted)/\(rangeTotalDays)", rangeLabel)
+                Divider().frame(height: 36)
+                statCell("\(allTimeCompleted)", "All Time")
             }
+            .background(Color(.tertiarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .padding(16)
         .background(Color(.secondarySystemGroupedBackground))

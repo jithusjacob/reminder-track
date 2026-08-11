@@ -14,44 +14,6 @@ final class ModelsTests: XCTestCase {
         XCTAssertEqual(ContentTab.initial(hasTrackers: false), .trackers)
     }
 
-    // MARK: - Summary Range Filter
-
-    private var refDate: Date {
-        var c = DateComponents(); c.year = 2026; c.month = 3; c.day = 15  // a Sunday
-        return Calendar.current.date(from: c)!
-    }
-
-    func testWeekFilterMatchesDateRangeWeek() {
-        let expected = DateRange.week(containing: refDate)
-        let actual   = SummaryRangeFilter.week.range(trackerCreatedAt: .distantPast, referenceDate: refDate)
-        XCTAssertEqual(actual.start, expected.start)
-        XCTAssertEqual(actual.end,   expected.end)
-    }
-
-    func testMonthFilterMatchesDateRangeMonth() {
-        let expected = DateRange.month(containing: refDate)
-        let actual   = SummaryRangeFilter.month.range(trackerCreatedAt: .distantPast, referenceDate: refDate)
-        XCTAssertEqual(actual.start, expected.start)
-        XCTAssertEqual(actual.end,   expected.end)
-    }
-
-    func testYearFilterMatchesDateRangeYear() {
-        let expected = DateRange.year(containing: refDate)
-        let actual   = SummaryRangeFilter.year.range(trackerCreatedAt: .distantPast, referenceDate: refDate)
-        XCTAssertEqual(actual.start, expected.start)
-        XCTAssertEqual(actual.end,   expected.end)
-    }
-
-    func testAllTimeFilterSpansFromCreationToReferenceDate() {
-        var c = DateComponents(); c.year = 2025; c.month = 6; c.day = 1
-        let createdAt = Calendar.current.date(from: c)!
-
-        let range = SummaryRangeFilter.allTime.range(trackerCreatedAt: createdAt, referenceDate: refDate)
-
-        XCTAssertEqual(range.start, Calendar.current.startOfDay(for: createdAt))
-        XCTAssertEqual(range.end,   refDate)
-    }
-
     // MARK: - Color Hex Parsing
 
     func testColorFromValidLowercaseHex() {
