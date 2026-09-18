@@ -34,7 +34,28 @@
       "Bash(xcodebuild test *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(git merge --no-ff remove-live-activity -m ' *)",
+      "Bash(git merge --no-ff summary-date-range-filter -m ' *)",
+      "Bash(git merge --no-ff reuse-schedule-reminder-on-complete -m ' *)",
+      "Bash(git merge --no-ff fix-stale-cache-remove-streak-page -m ' *)",
+      "Bash(git merge --no-ff simplify-summary-to-date-range-only -m ' *)",
+      "Skill(artifact-design)",
+      "Bash(xcodebuild -list -project Tracker.xcodeproj)",
+      "Bash(sips -g pixelWidth -g pixelHeight /private/tmp/claude-502/-Users-jsj-Documents-Reminder-Track/8c8cfb90-1f05-4864-b50e-8bb26c2c51d5/scratchpad/screenshots/1-trackers.png)",
+      "Bash(mkdir -p ~/Desktop/AppStoreScreenshots)",
+      "Bash(cp \"/private/tmp/claude-502/-Users-jsj-Documents-Reminder-Track/8c8cfb90-1f05-4864-b50e-8bb26c2c51d5/scratchpad/screenshots/1-trackers.png\" ~/Desktop/AppStoreScreenshots/)",
+      "Bash(cp \"/private/tmp/claude-502/-Users-jsj-Documents-Reminder-Track/8c8cfb90-1f05-4864-b50e-8bb26c2c51d5/scratchpad/screenshots/2-today.png\" ~/Desktop/AppStoreScreenshots/)",
+      "Bash(cp \"/private/tmp/claude-502/-Users-jsj-Documents-Reminder-Track/8c8cfb90-1f05-4864-b50e-8bb26c2c51d5/scratchpad/screenshots/3-calendar.png\" ~/Desktop/AppStoreScreenshots/)",
+      "Bash(cp \"/private/tmp/claude-502/-Users-jsj-Documents-Reminder-Track/8c8cfb90-1f05-4864-b50e-8bb26c2c51d5/scratchpad/screenshots/4-summary.png\" ~/Desktop/AppStoreScreenshots/)",
+      "Bash(xcrun xcresulttool *)",
+      "Bash(cp /private/tmp/claude-502/-Users-jsj-Documents-Reminder-Track/8c8cfb90-1f05-4864-b50e-8bb26c2c51d5/scratchpad/screenshots/6-reminders-lists.png ~/Desktop/AppStoreScreenshots/)",
+      "Bash(cp /private/tmp/claude-502/-Users-jsj-Documents-Reminder-Track/8c8cfb90-1f05-4864-b50e-8bb26c2c51d5/scratchpad/screenshots/7-reminders-inside-list.png ~/Desktop/AppStoreScreenshots/)",
+      "Bash(rm -f ~/Desktop/AppStoreScreenshots/6-reminders-app.png)",
+      "Artifact",
+      "Bash(tee \"/private/tmp/claude-502/-Users-jsj-Documents-Reminder-Track/8c8cfb90-1f05-4864-b50e-8bb26c2c51d5/tasks/ipad-test2.log\")",
+      "Bash(mkdir -p ~/Desktop/AppStoreScreenshots/iPad)",
+      "Bash(cp \"/private/tmp/claude-502/-Users-jsj-Documents-Reminder-Track/8c8cfb90-1f05-4864-b50e-8bb26c2c51d5/scratchpad/ipad-screenshots/1-ipad-trackers.png\" ~/Desktop/AppStoreScreenshots/iPad/)"
     ]
   }
 }
