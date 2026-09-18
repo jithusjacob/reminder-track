@@ -69,9 +69,13 @@ struct PermissionView: View {
             }
 
             VStack(alignment: .leading, spacing: 16) {
+                // Kept in sync with what's actually shipped — matches IntroView's
+                // claims (calendar/stats/reminders), not features that aren't
+                // built (widgets/Watch/Siri were removed from here for the same
+                // reason they're absent from the App Store description).
                 FeatureRow(icon: "icloud.fill",      color: .blue,   text: "iCloud sync across all your Apple devices")
-                FeatureRow(icon: "applewatch",       color: .green,  text: "Visible on Apple Watch & Reminders widgets")
-                FeatureRow(icon: "mic.fill",         color: .orange, text: "Ask Siri about your habits")
+                FeatureRow(icon: "calendar",         color: .green,  text: "A full calendar view of every day you tracked")
+                FeatureRow(icon: "chart.bar.fill",   color: .orange, text: "Stats for every tracker, updated automatically")
                 FeatureRow(icon: "arrow.triangle.2.circlepath", color: .indigo, text: "Two-way sync — tick in Reminders or in the app")
             }
             .padding(.horizontal, 32)
