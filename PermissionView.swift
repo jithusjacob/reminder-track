@@ -79,7 +79,11 @@ struct PermissionView: View {
             Spacer()
 
             Button(action: onRequest) {
-                Label("Allow Access to Reminders", systemImage: "checkmark.shield.fill")
+                // Apple Guideline 5.1.1(iv): a pre-permission screen must not use
+                // "Allow"-style wording — that's reserved for the system's own
+                // prompt, which appears right after this. "Continue" hands the
+                // actual decision to the real Reminders permission dialog.
+                Label("Continue", systemImage: "checkmark.shield.fill")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
