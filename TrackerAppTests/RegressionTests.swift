@@ -332,6 +332,30 @@ final class RegressionTests: XCTestCase {
         XCTAssertEqual(result["2026-05-10"]?.id, fresh.id)
     }
 
+    // MARK: - REG-020: New tracker with "Add Reminder" never saved a reminder
+    // Bug: TrackerStore.add() reloaded trackers right after creating the list, and
+    // syncScheduledReminderTimes reset reminderTime to nil because the brand-new list had no
+    // schedule reminder yet — so scheduleReminder(for:) got no time and silently returned,
+    // and nothing was saved to Reminders. Editing an existing tracker worked. Fix: carry the
+    // requested reminder time onto the created tracker before scheduling.
+    func testCreatedTrackerKeepsRequestedReminderTime() {
+        var rt = DateComponents(); rt.hour = 8; rt.minute = 15
+        var requested = makeTracker(id: "form-uuid")
+        requested.reminderTime = rt
+        let reloaded = makeTracker(id: "real-calendar-id")   // reminderTime wiped to nil by sync
+
+        let created = reloaded.carryingReminderTime(from: requested)
+
+        XCTAssertEqual(created.id, "real-calendar-id", "Must keep the real calendar id from EventKit")
+        XCTAssertEqual(created.reminderTime?.hour, 8)
+        XCTAssertEqual(created.reminderTime?.minute, 15)
+    }
+
+    func testCreatedTrackerWithoutReminderStaysNil() {
+        let created = makeTracker(id: "cal").carryingReminderTime(from: makeTracker(id: "form"))
+        XCTAssertNil(created.reminderTime)
+    }
+
     // MARK: - Helpers
 
     private func makeTracker(id: String = "reg-t") -> Tracker {
