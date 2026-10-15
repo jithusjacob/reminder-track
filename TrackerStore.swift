@@ -32,7 +32,11 @@ final class TrackerStore {
         do {
             let calId = try service.createTrackerCalendar(for: tracker)
             await load()
-            return trackers.first(where: { $0.id == calId })
+            guard let idx = trackers.firstIndex(where: { $0.id == calId }) else { return nil }
+            // load() derives reminderTime from the list's schedule reminder, which a
+            // brand-new list doesn't have yet — so keep the time the user just picked.
+            trackers[idx] = trackers[idx].carryingReminderTime(from: tracker)
+            return trackers[idx]
         } catch {
             errorMessage = error.localizedDescription
             return nil

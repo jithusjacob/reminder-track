@@ -280,3 +280,15 @@ extension DateFormatter {
         let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; return f
     }()
 }
+
+// MARK: - New tracker reminder time
+
+extension Tracker {
+    /// Returns this tracker with `requested`'s reminder time, used right after
+    /// creation before the list's schedule reminder exists in EventKit.
+    func carryingReminderTime(from requested: Tracker) -> Tracker {
+        var t = self
+        t.reminderTime = requested.reminderTime
+        return t
+    }
+}

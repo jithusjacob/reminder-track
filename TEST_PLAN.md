@@ -9,7 +9,19 @@
 
 ## 1. How to Run
 
+> **Build the `TrackerApp` scheme first.** `TrackerAppTests` links against the
+> host app (`TEST_HOST`) but its scheme does not rebuild it, so skipping this
+> step runs the tests against a stale app binary — new code shows up as
+> "has no member" compile errors, or worse, old code gets tested silently.
+> Use the same `-destination` and `-derivedDataPath` for both commands.
+
 ```bash
+# 0. Build the host app (required before the unit tests)
+xcodebuild build \
+  -scheme TrackerApp \
+  -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+  -derivedDataPath /tmp/tracker-build
+
 # Unit + regression + volume tests (fast, no device needed)
 xcodebuild test \
   -scheme TrackerAppTests \
