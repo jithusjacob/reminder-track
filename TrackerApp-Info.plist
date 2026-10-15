@@ -17,13 +17,13 @@
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.1</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
+	<string>10</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
 	<key>NSRemindersUsageDescription</key>
 	<string>Tracker uses Reminders to store your habits and sync them across your devices via iCloud.</string>
 	<key>UIApplicationSceneManifest</key>
